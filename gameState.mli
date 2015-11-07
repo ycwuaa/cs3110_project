@@ -26,6 +26,6 @@ val set_num_armies : t -> territory -> int -> t
 
 val set_territory_owner : t -> territory -> player_id -> t
 
-val remove_player : t -> player_id -> t 
+val remove_player : t -> player_id -> t
 
 val set_next_player : t -> t
