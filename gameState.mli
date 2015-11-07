@@ -41,3 +41,6 @@ val remove_player : t -> player_id -> t
 
 (** set the active player to the next player*)
 val set_next_player : t -> t
+
+(** set the active to the given playerid*)
+val set_active_player : t -> int -> t

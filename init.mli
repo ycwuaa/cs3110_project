@@ -11,3 +11,5 @@ val place_army int -> int -> territory -> unit
 
 (** decide which player to start from by taking in the player id*)
 val set_first_player int -> unit
+
+(** how to set first player? add new function in gameState?*)
