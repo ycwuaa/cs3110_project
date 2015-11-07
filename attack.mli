@@ -1,6 +1,6 @@
 (** attack.mli ****************************************************************)
 (** Handles checking if a desired attack is valid and performing the  attack **)
-(** mechanic *)
+(** mechanic ******************************************************************)
 
 Open GameState
 
