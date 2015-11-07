@@ -13,21 +13,21 @@ val roll_dice: () -> int
 val attack_outcome: int -> int -> bool
 
 (** updates the map by removing pieces from the territory  in the case where
-  * attacker wins the dice roll; returns an updated territory list *)
-val perform_attack: player_id -> player_id -> territory -> territory_list
+  * attacker wins the dice roll; returns an updated game state *)
+val perform_attack: player_id -> player_id -> territory -> t
 
 (** checks if a territory is captured after an attack; returns true if all
  ** pieces have been removed from the territory, false otherwise *)
 val is_captured: territory -> bool
 
-(** updates the map by moving n pieces of player_id onto a newly captured
+(** updates the game state by moving n pieces of player_id onto a newly captured
   * territory *)
-val invade: int -> player_id -> territory -> territory_list -> territory_list
+val invade: t -> int -> player_id -> territory -> t
 
 (** returns true if the given territory is adjacent to a territory controlled by
-  * player_id in territory_list, false otherwise*)
-val check_adjacent: player_id -> territory -> territory_list -> bool
+  * player_id in the game state, false otherwise*)
+val check_adjacent: t -> player_id -> territory -> bool
 
 (** returns true if player_id has at least two pieces on the given territory in
-  * territory_list, false otherwise*)
-val check_min_pieces: player_id -> territory -> territory_list -> bool
+  * the game state, false otherwise*)
+val check_min_pieces: t -> player_id -> territory -> bool
