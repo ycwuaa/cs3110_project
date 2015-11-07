@@ -2,10 +2,13 @@
 
 open GameState
 
+(** Choose a name for each AI at the beginning of the game.
+ *)
+val choose_name : unit -> string
+
 (** takes in a GameState and the number of extra armies received, and returns
- * an association list representing the number of armies the AI wants to put on
- * each territory *)
-val place_new_armies : t -> int -> (territory * int) list
+ * the new GameState with the armies placed in locations as chosen by the AI *)
+val place_new_armies : t -> int -> t
 
 (** takes in a GameState and returns Some (from, to, dice) if the AI wants to
  * attack the [to] territory with the army on the [from] territory using [dice]
@@ -18,6 +21,6 @@ val choose_attack : t -> (territory * territory * int) option
 val choose_move_conquerors : t -> territory -> territory -> int -> int
 
 (** takes in a GameState and returns Some (from, to, num) if the AI wants to
- * [num] armies from the [from] territory to the [to] territory, or None if
+ * move [num] armies from the [from] territory to the [to] territory, or None if
  * no redistribution is desired *)
 val redistribute_armies : t -> int -> (territory * territory * int) option
