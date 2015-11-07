@@ -3,9 +3,8 @@
 open GameState
 
 (** takes in a GameState and the number of extra armies received, and returns
- * an association list representing the number of armies the AI wants to put on
- * each territory *)
-val place_new_armies : t -> int -> (territory * int) list
+ * the new GameState with the armies placed in locations as chosen by the AI *)
+val place_new_armies : t -> int -> t
 
 (** takes in a GameState and returns Some (from, to, dice) if the AI wants to
  * attack the [to] territory with the army on the [from] territory using [dice]
