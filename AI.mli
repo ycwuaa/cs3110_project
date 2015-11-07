@@ -2,6 +2,10 @@
 
 open GameState
 
+(** Choose a name for each AI at the beginning of the game.
+ *)
+val choose_name : unit -> string
+
 (** takes in a GameState and the number of extra armies received, and returns
  * the new GameState with the armies placed in locations as chosen by the AI *)
 val place_new_armies : t -> int -> t
