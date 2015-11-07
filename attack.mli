@@ -2,7 +2,7 @@
 (** Handles checking if a desired attack is valid and performing the  attack **)
 (** mechanic ******************************************************************)
 
-Open GameState
+open GameState
 
 
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)

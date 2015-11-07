@@ -1,11 +1,9 @@
 (** gameState.mli *)
 
 type t
-type territory = string
-type territory_list = territory list
-type continent_name = string
-type continent_list = continent_name list
-type player_id = int
+type territory
+type continent
+type player_id
 
 (** only players still in the game *)
 val get_player_id_list : t -> player_id list
@@ -44,3 +42,9 @@ val set_next_player : t -> t
 
 (** set the active to the given playerid*)
 val set_active_player : t -> int -> t
+
+(** return the name of the given territory *)
+val string_of_territory : territory -> string
+
+(** return the name of the given continent *)
+val string_of_continent : continent -> string
