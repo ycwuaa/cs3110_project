@@ -1,33 +1,33 @@
 (** attack.mli ****************************************************************)
 (** Handles checking if a desired attack is valid and performing the  attack **)
-(** mechanic *)
+(** mechanic ******************************************************************)
 
 open GameState
 
 
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)
-val roll_dice: () -> int
+val roll_dice : unit -> int
 
-(** returns a bool  that represents the outcome of a dice match-up that is true
-  * if attacker won and false otherwise *)
-val attack_outcome: int -> int -> bool
+(** takes in two sorted lists representing the outcomes of attckers and defender
+  * die rolls; returns a pair of ints reprsenting the number or successes for
+  * attacker and defender respectively*)
+val attack_outcome : int list -> int list -> int*int
 
-(** updates the map by removing pieces from the territory  in the case where
-  * attacker wins the dice roll; returns an updated game state *)
-val perform_attack: player_id -> player_id -> territory -> t
+(** returns and updated gamestate with n pieces removed from the given
+  * territory *)
+val remove_pieces : t -> int -> territory -> t
 
 (** checks if a territory is captured after an attack; returns true if all
  ** pieces have been removed from the territory, false otherwise *)
-val is_captured: territory -> bool
+val is_captured : t -> territory -> bool
 
-(** updates the game state by moving n pieces of player_id onto a newly captured
-  * territory *)
-val invade: t -> int -> player_id -> territory -> t
+(** updates the game state by moving n pieces of allied with the owner of the
+  * first territory to the second territory *)
+val invade : t -> int -> territory -> territory -> t
 
-(** returns true if the given territory is adjacent to a territory controlled by
-  * player_id in the game state, false otherwise*)
-val check_adjacent: t -> player_id -> territory -> bool
+(** returns true if the first territory is adjacent to the second in gamestate*)
+val check_adjacent : t -> territory -> territory -> bool
 
-(** returns true if player_id has at least two pieces on the given territory in
-  * the game state, false otherwise*)
-val check_min_pieces: t -> player_id -> territory -> bool
+(** returns true if there are enough peices in territory for its owner to
+  * perform an attack with n pieces*)
+val check_min_pieces : t  -> int -> territory -> bool
