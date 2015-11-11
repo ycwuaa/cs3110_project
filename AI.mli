@@ -23,4 +23,4 @@ val choose_move_conquerors : t -> territory -> territory -> int -> int
 (** takes in a GameState and returns Some (from, to, num) if the AI wants to
  * move [num] armies from the [from] territory to the [to] territory, or None if
  * no redistribution is desired *)
-val redistribute_armies : t -> int -> (territory * territory * int) option
+val redistribute_armies : t -> (territory * territory * int) option
