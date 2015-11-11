@@ -6,6 +6,9 @@ Open GameState
 (** displays the title screen screen of the game *)
 val draw_start: unit -> unit;
 
+(** displays the win/lose screen screen of the game *)
+val draw_end: player_id -> unit;
+
 (** displays the world map with countries colored based on player, number of
  * armies on each country, and current player *)
 val draw_map: t -> unit;
