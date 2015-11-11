@@ -1,8 +1,10 @@
 (** input.mli *)
 (** Handles all game actions by human players*)
 
+open GameState
+
 (** Gets the start configuration for the game (# of human, # of AI) *)
-val choose_start : unit -> (int, int)
+val choose_start : unit -> int * int
 
 (** Returns whether the player wants to play again. *)
 val play_again : unit -> bool
