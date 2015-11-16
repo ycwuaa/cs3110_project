@@ -1,0 +1,34 @@
+Design Review
+-------------
+
+point of meeting: achievable but not trivial?
+
+- "fun"/ moddability
+- game state
+  - HashTable, Map modules (instead of association lists) for territories?
+  - input / output methods? how to recognize clickable areas
+- modular - how easy to mod?
+  - phases
+- testing
+  - unit tests (both by writers and others)
+  - playtesting
+- meeting times, schedule
+  - implementation - try being done by the end of Thanksgiving Break
+  - DUE: Dec 3
+- output
+  - display?
+  - number of armies
+- AI
+  - similar to chess AIs
+  - heuristic: metric for "goodness" of current situation
+  - improve heuristic (highest expected gain)
+  - computing against each other (genetic algorithms) - if wanted/have time (but advanced)
+- init, endturn
+  - distributing troops, territories
+  - check win
+  - movement of troops
+- beginturn, attack
+  - dice rolls
+  - update game state with armies
+
+- cheating? (allow with penalty?)
