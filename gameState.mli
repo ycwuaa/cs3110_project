@@ -5,6 +5,9 @@ type territory
 type continent
 type player_id
 
+(** a player_id representing the lack of a player *)
+val no_one : player_id
+
 (** only players still in the game *)
 val get_player_id_list : t -> player_id list
 
@@ -14,13 +17,13 @@ val get_territories : t -> player_id -> territory list
 (** use to identify it is a computer player or human*)
 val get_is_human : t -> player_id -> bool
 
-(** get the name of the player correspnding to the given id*)
+(** get the name of the player corresponding to the given id*)
 val get_name : t -> player_id -> string
 
 (** get the current active player_id*)
-val get_activite_player : t -> player_id
+val get_active_player : t -> player_id
 
-(** get the numbe of armies on the specified territory*)
+(** get the number of armies on the specified territory*)
 val get_armies : t -> territory -> int
 
 (** give back the id of the owner of the given territory*)
@@ -44,7 +47,10 @@ val set_next_player : t -> t
 val set_active_player : t -> player_id -> t
 
 (** return the name of the given territory *)
-val string_of_territory : territory -> string
+val string_of_territory : t -> territory -> string
 
 (** return the name of the given continent *)
-val string_of_continent : continent -> string
+val string_of_continent : t -> continent -> string
+
+(** returns true if the two territories are adjacent *)
+val check_adjacency : t -> territory -> territory -> bool
