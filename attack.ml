@@ -34,24 +34,41 @@ let attack_outcome (attacker: int list) (defender: int list) : int*int =
 (** returns and updated gamestate with n pieces removed from the given
   * territory *)
 let remove_pieces (state: t) (n: int) (terr: territory): t =
-  failwith "not implemented"
+  (*get current number on territory*)
+  let current = GameState.get_armies state terr in
+  (*subtract n pieces and return updated state*)
+  let new_num = current - n in
+  GameState.set_num_armies state terr new_num
 
 (** checks if a territory is captured after an attack; returns true if all
  ** pieces have been removed from the territory, false otherwise *)
 let val is_captured (state: t) (terr: territory): bool =
-  failwith "not implemented"
+  let num = GameState.get_armies state terr in
+  if num = 0 then true else false
 
 (** updates the game state by moving n pieces of allied with the owner of the
   * first territory to the second territory *)
 let val invade (state: t) (n: int) (terr1: territory) (terr2: territory): t =
-  failwith "not implemented"
+  (*get terr1 owner pid*)
+  let player = GameState.get_territory_owner state terr1 in
+  (*update territory owner*)
+  let state1 = GameState.set_territory_owner state terr2 player in
+  (*remove n pieces from terr1*)
+  let current = GameState.get_armies state1 terr1 in
+  let new_num = current - n in
+  let state2 = GameState.set_num_armies state1 terr1 new_num in
+  (*add n peices to terr 2 and return updated gamestate*)
+  let current = GameState.get_armies state2 terr2 in
+  let new_num = current + n in
+  GameState.set_num_armies state2 terr2 new_num
 
 (** returns true if the first territory is adjacent to the second in gamestate*)
 let check_adjacent (state: t) (terr1: territory) (terr2: territory): bool =
-  failwith "not implemented"
+  (failwith "not implemented")
 
 (** returns true if there are enough peices in territory for its owner to
-  * perform an attack with n pieces*)
+  * perform an attack with n pieces (need to have n+1 pieces in territory)*)
 let check_min_pieces (state: t)  (n: int) (terr: territory): bool =
-  failwith "not implemented"
+  let num_pieces = get_armies state terr in
+  if n >= num_pieces then false else true
 
