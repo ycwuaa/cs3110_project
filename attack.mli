@@ -25,9 +25,8 @@ val is_captured : t -> territory -> bool
   * first territory to the second territory *)
 val invade : t -> int -> territory -> territory -> t
 
-(** returns true if the first territory is adjacent to the second in gamestate*)
-val check_adjacent : t -> territory -> territory -> bool
-
 (** returns true if there are enough peices in territory for its owner to
-  * perform an attack with n pieces*)
+  * perform an attack with n pieces
+
+    TODO: move to checking*)
 val check_min_pieces : t  -> int -> territory -> bool
