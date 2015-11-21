@@ -3,17 +3,33 @@
 (** mechanic ******************************************************************)
 
 open GameState
+open Random
 
 
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)
 let roll_dice () : int =
+  (*get number between 0 and 5 (inclusive)*)
+  let result = int 6 in
+  (*add 1 to result and return*)
+  result + 1
 
 (** takes in two sorted lists representing the outcomes of attckers and defender
-  * die rolls; returns a pair of ints reprsenting the number or successes for
+  * die rolls; returns a pair of ints represnting the number or successes for
   * attacker and defender respectively*)
-let attack_outcome (attacker_rolls: int list) (defender_rolls: int list) :
-  int*int =
-  failwith "not implemented"
+let attack_outcome (attacker: int list) (defender: int list) : int*int =
+  (*takes in two int lists representing die rolls of each player and accumulates
+  score of each by comparing each int*)
+  let rec compare d1 d2 s1 s2 =
+    match d1 with
+    | [] -> (s1, s2)
+    | hd1 :: tl1 -> (
+      match d2 with
+      | [] -> compare tl1 [] (s1 + 1) s2
+      | hd2 :: tl2 ->
+        if hd1 > hd2 then compare tl1 tl2 (s1+1) s2
+        else compare tl1 tl2 s1 (s2 + 1))
+  in
+  compare attacker defender 0 0
 
 (** returns and updated gamestate with n pieces removed from the given
   * territory *)
