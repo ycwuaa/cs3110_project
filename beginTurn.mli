@@ -9,5 +9,5 @@ open GameState
 val award_pieces : t -> player_id -> int
 
 (** returns a game state with n pieces aligned with player_id placed on given
-  * territory*)
+  * territory, assumes player_id controls territory*)
 val place_piece : t -> int -> player_id -> territory -> t

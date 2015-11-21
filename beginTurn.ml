@@ -19,13 +19,13 @@ let award_pieces  (state: t)  (pid: player_id): int =
 
 
 (** returns a game state with n pieces aligned with player_id placed on given
-  * territory*)
+  * territory, assumes pid controls terr*)
 let place_piece (state: t) (n: int) (pid: player_id) (terr: territory): t =
-  (*if pid is not yet owner, refuse to place pieces?*)
+  (* (*if pid is not yet owner, refuse to place pieces?*)
   let territories = get_territories state pid in
   if not (List.mem terr territories)
     then failwith "cannot place unit on territory you do not control"
-  else
+  else *)
     (*add existing # of armies on terr to new additions*)
     let existing = get_armies state terr in
     let new_num = existing + n in

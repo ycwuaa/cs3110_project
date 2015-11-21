@@ -38,7 +38,7 @@ let remove_pieces (state: t) (n: int) (terr: territory): t =
   let current = get_armies state terr in
   (*subtract n pieces and return updated state*)
   let new_num = current - n in
-  GameState.set_num_armies state terr new_num
+  set_num_armies state terr new_num
 
 (** checks if a territory is captured after an attack; returns true if all
  ** pieces have been removed from the territory, false otherwise *)
@@ -62,13 +62,10 @@ let invade (state: t) (n: int) (terr1: territory) (terr2: territory): t =
   let new_num = current + n in
   set_num_armies state2 terr2 new_num
 
-(** returns true if the first territory is adjacent to the second in gamestate*)
-let check_adjacent (state: t) (terr1: territory) (terr2: territory): bool =
-  (failwith "not implemented")
-
 (** returns true if there are enough peices in territory for its owner to
   * perform an attack with n pieces (need to have n+1 pieces in territory)*)
 let check_min_pieces (state: t)  (n: int) (terr: territory): bool =
+  (*TODO: move to checking*)
   let num_pieces = get_armies state terr in
   if n >= num_pieces then false else true
 
