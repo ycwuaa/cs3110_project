@@ -41,7 +41,7 @@ val remove_player : t -> player_id -> t
 val set_next_player : t -> t
 
 (** set the active to the given playerid*)
-val set_active_player : t -> int -> t
+val set_active_player : t -> player_id -> t
 
 (** return the name of the given territory *)
 val string_of_territory : territory -> string
