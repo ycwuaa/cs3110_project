@@ -20,6 +20,12 @@ let no_one = -1
 let create_player (n: int) : player_id =
   n
 
+(** returns a new state with player_id added to players*)
+let add_player (state: t) (pid: player_id) (name: string) (human: bool) : t =
+  let current_players = state.player_info in
+  let new_players = (pid, (human, name)) :: current_players in
+  {state with player_info = new_players}
+
 let new_state () =
   (* for now, a very small map
    * TODO: read territory list from file? *)

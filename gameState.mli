@@ -11,6 +11,9 @@ val no_one : player_id
 (** creates a player id with given value *)
 val create_player : int -> player_id
 
+(** returns a new state with player_id added to players *)
+val add_player : t -> player_id -> string -> bool -> t
+
 (** creates a new instance of state with all territories initially unowned
   * (currently hardcoded) *)
 val new_state : unit -> t

@@ -37,3 +37,6 @@ TEST_UNIT "get_territory_owner" =
   assert(get_t_owners_helper (get_territories state no_one))
 
 TEST_UNIT "get_continents" = get_continents state no_one === []
+
+let p1 = create_player 1
+let state1
