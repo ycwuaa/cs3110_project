@@ -16,6 +16,10 @@ type t = {
 
 let no_one = -1
 
+(** creates a player id with given value *)
+let create_player (n: int) : player_id =
+  n
+
 let new_state () =
   (* for now, a very small map
    * TODO: read territory list from file? *)

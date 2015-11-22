@@ -14,3 +14,26 @@ TEST_UNIT "get_is_human" = 0 === 0 (*need better error handling*)
 TEST_UNIT "get_name" = 0 === 0 (*need better error handling*)
 
 TEST_UNIT "get_active_player" = get_active_player state === no_one
+
+(*returns true if every territory held by no_one has 0 pieces, false otherwise*)
+let rec get_armies_init_helper territories =
+  match territories with
+  | [ ] -> true
+  | hd :: tl -> let num_armies = get_armies state hd in
+    if num_armies = 0 then (true  && (get_armies_init_helper tl))
+    else false
+
+TEST_UNIT "get_armies" =
+  assert(get_armies_init_helper (get_territories state no_one))
+
+(*returns true if no_one is the owner of all territories in list*)
+let rec get_t_owners_helper territories =
+  match territories with
+  | [] -> true
+  | hd :: tl -> let owner = get_territory_owner state hd in
+    if owner = no_one then (true && (get_t_owners_helper tl))
+    else false
+TEST_UNIT "get_territory_owner" =
+  assert(get_t_owners_helper (get_territories state no_one))
+
+TEST_UNIT "get_continents" = get_continents state no_one === []
