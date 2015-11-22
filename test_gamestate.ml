@@ -38,5 +38,20 @@ TEST_UNIT "get_territory_owner" =
 
 TEST_UNIT "get_continents" = get_continents state no_one === []
 
+let terr1 = List.hd (get_territories state no_one)
+
+let state = set_num_armies state terr1 2
+
+TEST_UNIT "set_num_armies" = get_armies state terr1 === 2
+
 let p1 = create_player 1
-let state1
+
+let state = add_player state p1 "test player1" true
+
+let state = set_territory_owner state terr1 p1
+
+TEST_UNIT "set_territory_owner" = get_territory_owner state terr1 === p1
+
+let state = remove_player state p1
+
+TEST_UNIT "remove_player" =
