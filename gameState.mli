@@ -8,6 +8,10 @@ type player_id
 (** a player_id representing the lack of a player *)
 val no_one : player_id
 
+(** creates a new instance of state with all territories initially unowned
+  * (currently hardcoded) *)
+val new_state : unit -> t
+
 (** only players still in the game *)
 val get_player_id_list : t -> player_id list
 
