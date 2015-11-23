@@ -94,7 +94,8 @@ let get_territory_owner (gs:t) (terr:territory) : player_id =
     | (t,n,_)::tl -> if (t = terr) then n else find tl
   in find gs.territories
 
-(** get a list of continents controlled by player_id, returns [] if no continents are held *)
+(** get a list of continents controlled by player_id, returns [] if no
+  * continents are held *)
 let get_continents (gs:t) (id:player_id) : continent list =
   let rec find lst =
     match lst with
