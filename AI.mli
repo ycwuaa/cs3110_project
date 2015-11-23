@@ -10,8 +10,9 @@ val choose_name : unit -> string
 val place_original_armies: t -> int -> (int * territory) list
 
 (** takes in a GameState and the number of extra armies received, and returns
- * the new GameState with the armies placed in locations as chosen by the AI *)
-val place_new_armies : t -> int -> t
+ * a territory and int containing the newly added armies that the AI had
+ * added *)
+val place_new_armies : t -> int -> (int * territory)
 
 (** takes in a GameState and returns Some (from, to, dice) if the AI wants to
  * attack the [to] territory with the army on the [from] territory using [dice]
