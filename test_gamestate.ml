@@ -46,7 +46,12 @@ TEST_UNIT "set_num_armies" = get_armies state terr1 === 2
 
 let p1 = create_player 1
 
+let old_player_list = get_player_id_list state
+
 let state = add_player state p1 "test player1" true
+
+TEST_UNIT "add_player" =
+  assert(List.length (get_player_id_list state) > List.length old_player_list)
 
 let state = set_territory_owner state terr1 p1
 
@@ -54,4 +59,4 @@ TEST_UNIT "set_territory_owner" = get_territory_owner state terr1 === p1
 
 let state = remove_player state p1
 
-TEST_UNIT "remove_player" =
+TEST_UNIT "remove_player" = get_player_id_list state === old_player_list

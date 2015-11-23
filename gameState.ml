@@ -41,7 +41,6 @@ let new_state () =
       ("Argentina", ["Brazil"])]
   }
 
-
 (** only players still in the game *)
 let get_player_id_list (gs:t) : player_id list =
   let rec get_ids lst =
@@ -130,7 +129,7 @@ let set_territory_owner (state: t) (terr: territory) (pid: player_id): t =
 
 (** remove a player from the game by giving the player_id*)
 let remove_player (gs:t) (player:player_id) : t =
-  let helper (x, _) = (x=player) in
+  let helper (x, _) = (x!=player) in
   let new_list = List.filter helper gs.player_info in
   {gs with player_info = new_list}
 
