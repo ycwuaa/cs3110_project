@@ -135,14 +135,28 @@ let remove_player (gs:t) (player:player_id) : t =
 
 (** set the active player to the next player*)
 let set_next_player (gs:t) : t =
-  let (og,(_,_)) = List.hd (gs.player_info) in
+  (* let (og,(_,_)) = List.hd (gs.player_info) in
   let rec find lst =
     match lst with
     | [] -> failwith "No players in game."
     | (i1,(_,_))::(i2,(_,_))::tl -> if(i1 = gs.active_player)
         then i2 else find tl
     | (i,(_,_))::tl -> if(i = gs.active_player) then og else find tl
-  in {gs with active_player = (find gs.player_info)}
+  in {gs with active_player = (find gs.player_info)} *)
+  let current = gs.active_player in
+  (*returns the index of active player in player_info*)
+  let rec find lst n =
+    if current = no_one then 0 else
+    match lst with
+    | [] -> failwith "No players in game"
+    | (id, (_, _))::tl -> (
+      if id = current then
+        if n >= (List.length gs.player_info) then 0 else n+1
+      else find tl (n+1))
+  in
+  let index = find gs.player_info 0 in
+  let (id, (h, n)) = List.nth gs.player_info index in
+  {gs with active_player = id}
 
 (** set the active to the given player_id*)
 let set_active_player (state: t) (pid: player_id): t =
