@@ -178,7 +178,8 @@ let string_of_territory (gs:t) (terr:territory) : string =
 let string_of_continent (gs:t) (c:continent) : string =
   c
 
-(** returns true if the two territories are adjacent *)
-let check_adjacency (gs:t) (terr1:territory) (terr2:territory) : bool =
-  let neighbors = List.assoc terr1 gs.map in
-  List.mem terr2 neighbors
+(** returns a list of territories adjacent to terr1 *)
+let check_adjacency (gs:t) (terr1:territory) : territory list =
+  (* let neighbors = List.assoc terr1 gs.map in
+  List.mem terr2 neighbors *)
+  List.assoc terr1 gs.map

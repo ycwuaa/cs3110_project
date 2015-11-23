@@ -66,4 +66,4 @@ val string_of_territory : t -> territory -> string
 val string_of_continent : t -> continent -> string
 
 (** returns true if the two territories are adjacent *)
-val check_adjacency : t -> territory -> territory -> bool
+val get_adjacency : t -> territory -> territory list

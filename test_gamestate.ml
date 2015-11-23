@@ -78,3 +78,5 @@ let state = remove_player state p1
 TEST_UNIT "remove_player" = get_player_id_list state === old_player_list
 
 TEST_UNIT "get_continents" = get_continents state p1 === []
+
+TEST_UNIT "get_continents" = get_continents state no_one === []
