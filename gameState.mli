@@ -42,6 +42,12 @@ val get_territory_owner : t -> territory -> player_id
 (** get a list of continents controlled by player_id, returns [] if no continents are held *)
 val get_continents : t -> player_id -> continent list
 
+(** returns a list of all continents in the game *)
+val get_all_continents : t -> continent list
+
+(** returns a list of all territories in the game *)
+val get_all_territories : t -> territory list
+
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
 val set_num_armies : t -> territory -> int -> t

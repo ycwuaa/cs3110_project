@@ -103,6 +103,26 @@ let get_continents (gs:t) (id:player_id) : continent list =
     | (c,n)::tl -> if(n = id) then c::(find tl) else find tl
   in find gs.continent_owners
 
+(** returns a list of all continents in the game *)
+let get_all_continents (state: t) : continent list =
+  let pairs = state.continents in
+  let rec get_continent_list c_list =
+    match c_list with
+    | [] -> []
+    | (c, _) :: tl -> c :: get_continent_list tl
+  in
+  get_continent_list pairs
+
+(** returns a list of all territories in the game *)
+let get_all_territories (state: t) : territory list =
+  let tuples = state.territories in
+  let rec get_territory_list t_list =
+    match t_list with
+    | [] -> []
+    | (t, _, _) :: tl -> t :: get_territory_list tl
+  in
+  get_territory_list tuples
+
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
 let set_num_armies (gs:t) (terr:territory) (n:int) : t =
@@ -179,7 +199,7 @@ let string_of_continent (gs:t) (c:continent) : string =
   c
 
 (** returns a list of territories adjacent to terr1 *)
-let check_adjacency (gs:t) (terr1:territory) : territory list =
+let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
