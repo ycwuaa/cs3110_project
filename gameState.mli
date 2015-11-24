@@ -8,7 +8,14 @@ type player_id
 (** a player_id representing the lack of a player *)
 val no_one : player_id
 
-(** create an empty game state*)
+(** creates a player id with given value *)
+val create_player : int -> player_id
+
+(** returns a new state with player_id added to players *)
+val add_player : t -> player_id -> string -> bool -> t
+
+(** creates a new instance of state with all territories initially unowned
+  * (currently hardcoded) *)
 val new_state : unit -> t
 
 (** only players still in the game *)
@@ -31,6 +38,15 @@ val get_armies : t -> territory -> int
 
 (** give back the id of the owner of the given territory*)
 val get_territory_owner : t -> territory -> player_id
+
+(** get a list of continents controlled by player_id, returns [] if no continents are held *)
+val get_continents : t -> player_id -> continent list
+
+(** returns a list of all continents in the game *)
+val get_all_continents : t -> continent list
+
+(** returns a list of all territories in the game *)
+val get_all_territories : t -> territory list
 
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
@@ -56,4 +72,4 @@ val string_of_territory : t -> territory -> string
 val string_of_continent : t -> continent -> string
 
 (** returns true if the two territories are adjacent *)
-val check_adjacency : t -> territory -> territory -> bool
+val get_adjacency : t -> territory -> territory list

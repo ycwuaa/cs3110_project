@@ -17,9 +17,9 @@ val choose_name : unit -> string
 val place_original_armies: t -> int -> (int * territory) list
 
 (** takes in a GameState and the number of extra armies received, and returns
- * a new GameState containing the newly added armies that the human had
- * added onto the territories *)
-val place_new_armies : t -> int -> t
+ * a territory and int containing the newly added armies that the human had
+ * added *)
+val place_new_armies : t -> int -> (int * territory)
 
 (** takes in a GameState and returns Some (from, to, dice) if player will
  * attack the [to] territory with the army on the [from] territory using [dice]

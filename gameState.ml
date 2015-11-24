@@ -16,6 +16,16 @@ type t = {
 
 let no_one = -1
 
+(** creates a player id with given value *)
+let create_player (n: int) : player_id =
+  n
+
+(** returns a new state with player_id added to players*)
+let add_player (state: t) (pid: player_id) (name: string) (human: bool) : t =
+  let current_players = state.player_info in
+  let new_players = (pid, (human, name)) :: current_players in
+  {state with player_info = new_players}
+
 let new_state () =
   (* for now, a very small map
    * TODO: read territory list from file? *)
@@ -30,7 +40,6 @@ let new_state () =
       ("Brazil", ["Argentina"]);
       ("Argentina", ["Brazil"])]
   }
-
 
 (** only players still in the game *)
 let get_player_id_list (gs:t) : player_id list =
@@ -85,13 +94,34 @@ let get_territory_owner (gs:t) (terr:territory) : player_id =
     | (t,n,_)::tl -> if (t = terr) then n else find tl
   in find gs.territories
 
-(** get a list of continents controlled by player_id, returns [] if no continents are held *)
+(** get a list of continents controlled by player_id, returns [] if no
+  * continents are held *)
 let get_continents (gs:t) (id:player_id) : continent list =
   let rec find lst =
     match lst with
     | [] -> []
     | (c,n)::tl -> if(n = id) then c::(find tl) else find tl
   in find gs.continent_owners
+
+(** returns a list of all continents in the game *)
+let get_all_continents (state: t) : continent list =
+  let pairs = state.continents in
+  let rec get_continent_list c_list =
+    match c_list with
+    | [] -> []
+    | (c, _) :: tl -> c :: get_continent_list tl
+  in
+  get_continent_list pairs
+
+(** returns a list of all territories in the game *)
+let get_all_territories (state: t) : territory list =
+  let tuples = state.territories in
+  let rec get_territory_list t_list =
+    match t_list with
+    | [] -> []
+    | (t, _, _) :: tl -> t :: get_territory_list tl
+  in
+  get_territory_list tuples
 
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
@@ -120,20 +150,34 @@ let set_territory_owner (state: t) (terr: territory) (pid: player_id): t =
 
 (** remove a player from the game by giving the player_id*)
 let remove_player (gs:t) (player:player_id) : t =
-  let helper (x, _) = (x=player) in
+  let helper (x, _) = (x!=player) in
   let new_list = List.filter helper gs.player_info in
   {gs with player_info = new_list}
 
 (** set the active player to the next player*)
 let set_next_player (gs:t) : t =
-  let (og,(_,_)) = List.hd (gs.player_info) in
+  (* let (og,(_,_)) = List.hd (gs.player_info) in
   let rec find lst =
     match lst with
     | [] -> failwith "No players in game."
     | (i1,(_,_))::(i2,(_,_))::tl -> if(i1 = gs.active_player)
         then i2 else find tl
     | (i,(_,_))::tl -> if(i = gs.active_player) then og else find tl
-  in {gs with active_player = (find gs.player_info)}
+  in {gs with active_player = (find gs.player_info)} *)
+  let current = gs.active_player in
+  (*returns the index of active player in player_info*)
+  let rec find lst n =
+    if current = no_one then 0 else
+    match lst with
+    | [] -> failwith "No players in game"
+    | (id, (_, _))::tl -> (
+      if id = current then
+        if n >= (List.length gs.player_info) then 0 else n+1
+      else find tl (n+1))
+  in
+  let index = find gs.player_info 0 in
+  let (id, (h, n)) = List.nth gs.player_info index in
+  {gs with active_player = id}
 
 (** set the active to the given player_id*)
 let set_active_player (state: t) (pid: player_id): t =
@@ -154,7 +198,8 @@ let string_of_territory (gs:t) (terr:territory) : string =
 let string_of_continent (gs:t) (c:continent) : string =
   c
 
-(** returns true if the two territories are adjacent *)
-let check_adjacency (gs:t) (terr1:territory) (terr2:territory) : bool =
-  let neighbors = List.assoc terr1 gs.map in
-  List.mem terr2 neighbors
+(** returns a list of territories adjacent to terr1 *)
+let get_adjacency (gs:t) (terr1:territory) : territory list =
+  (* let neighbors = List.assoc terr1 gs.map in
+  List.mem terr2 neighbors *)
+  List.assoc terr1 gs.map
