@@ -77,6 +77,28 @@ let state = remove_player state p1
 
 TEST_UNIT "remove_player" = get_player_id_list state === old_player_list
 
+(* returns the first continent in c_list or None if there are no continents *)
+let get_first_continent c_list =
+  match c_list with
+  | [] -> None
+  | hd :: tl -> Some hd
+
+let cont = get_first_continent (get_all_continents state)
+
+(** returns true if [id] is correctly set as owner of [c], or if [cont] is
+  * None, returns true if [id] owns no continents
+  * precondition: id owns no continents *)
+let check_cont_ownership id cont =
+    match cont with
+    | None -> if (get_continents state id) = [] then true else false
+    | Some c -> (
+      let state1 = set_continent_owner state id c in
+      if (get_continents state1 id) = [c] then true else false)
+
+
 TEST_UNIT "get_continents" = get_continents state p1 === []
 
 TEST_UNIT "get_continents" = get_continents state no_one === []
+
+TEST_UNIT "get_continents" = assert(check_cont_ownership p1 cont)
+
