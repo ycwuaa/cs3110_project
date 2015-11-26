@@ -1,7 +1,7 @@
 (** gameState.mli *)
 
 type t
-type territory
+type territory = string
 type continent
 type player_id
 
