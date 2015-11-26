@@ -124,6 +124,9 @@ let create_connections () =
   let f x = List.map (fun y -> tarray.(y-1)) x in
   Array.to_list (Array.mapi (fun n x -> (x, f carray.(n))) tarray)
 
+let create_cowners () =
+  List.map (fun (x,_) -> (x, no_one)) cints
+
 (*External functions*)
 
 (** creates a player id with given value *)
@@ -309,4 +312,3 @@ let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
-
