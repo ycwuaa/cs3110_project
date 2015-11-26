@@ -13,8 +13,118 @@ type t = {
            (* list of territories, associated with a list of its neighbors *)
            map : (territory * territory list) list
          }
-
 let no_one = -1
+
+let tarray = [|
+  "Alaska";
+  "Alberta";
+  "Central America";
+  "Eastern United States";
+  "Greenland";
+  "Northwest Territory";
+  "Ontario";
+  "Quebec";
+  "Western United States";
+  "Argentina";
+  "Brazil";
+  "Peru";
+  "Venezuela";
+  "Great Britain";
+  "Iceland";
+  "Northern Europe";
+  "Scandinavia";
+  "Southern Europe";
+  "Ukraine";
+  "Western Europe";
+  "Congo";
+  "East Africa";
+  "Egypt";
+  "Madagascar";
+  "North Africa";
+  "South Africa";
+  "Afghanistan";
+  "China";
+  "India";
+  "Irkutsk";
+  "Japan";
+  "Kamchatka";
+  "Middle East";
+  "Mongolia";
+  "Siam";
+  "Siberia";
+  "Ural";
+  "Yakutsk";
+  "Eastern Australia";
+  "Indonesia";
+  "New Guinea";
+  "Western Australia" |]
+
+let cints = [
+("North America", [1;2;3;4;5;6;7;8;9]);
+("South America", [10;11;12;13]);
+("Europe", [14;15;16;17;18;19;20]);
+("Africa", [21;22;23;24;25;26]);
+("Asia", [27;28;29;30;31;32;33;34;35;36;37;38]);
+("Australia",[39;40;41;42])]
+
+let carray = [|
+  [2;6;32];
+  [1;6;7;9];
+  [4;9;13];
+  [3;7;8;9];
+  [6;7;8;15];
+  [1;2;5;7];
+  [2;4;5;6;8;9];
+  [4;5;7];
+  [2;3;4;7];
+  [11;12];
+  [10;12;13;25];
+  [10;11;13];
+  [3;11;12];
+  [15;16;17;20];
+  [5;14;17];
+  [14;17;18;19;20];
+  [14;15;16;19];
+  [16;19;20;23;25;33];
+  [16;17;18;27;33;37];
+  [14;16;18;25];
+  [22;25;26];
+  [21;23;24;25;33];
+  [18;22;25;33];
+  [22;26];
+  [18;20;21;22;23];
+  [21;22;24];
+  [19;28;29;33;37];
+  [27;29;34;35;36;37];
+  [27;28;33;35];
+  [32;34;36;38];
+  [32;34];
+  [1;30;31;34;38];
+  [18;19;22;23;27;29];
+  [28;30;31;32;36];
+  [28;29;40];
+  [28;30;34;37;38];
+  [19;27;28;36];
+  [30;32;36];
+  [41;42];
+  [35;41;42];
+  [39;40;42];
+  [39;40;41] |]
+
+(*Internal functions*)
+
+let create_territories () =
+  Array.to_list (Array.map (fun n -> (n,-1,0)) tarray)
+
+let create_continents () =
+  let f (n,x) = (n, List.map (fun y -> tarray.(y-1)) x) in
+  List.map f cints
+
+let create_connections () =
+  let f x = List.map (fun y -> tarray.(y-1)) x in
+  Array.to_list (Array.mapi (fun n x -> (x, f carray.(n))) tarray)
+
+(*External functions*)
 
 (** creates a player id with given value *)
 let create_player (n: int) : player_id =
@@ -29,16 +139,12 @@ let add_player (state: t) (pid: player_id) (name: string) (human: bool) : t =
 let new_state () =
   (* for now, a very small map
    * TODO: read territory list from file? *)
-  { territories = [
-      ("Brazil", -1, 0);
-      ("Argentina", -1, 0)];
+  { territories = create_territories ();
     active_player = -1;
-    continents = [];
+    continents = create_continents ();
     continent_owners = [];
     player_info = [];
-    map = [
-      ("Brazil", ["Argentina"]);
-      ("Argentina", ["Brazil"])]
+    map = create_connections ()
   }
 
 (** only players still in the game *)
@@ -203,3 +309,4 @@ let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
+

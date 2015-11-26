@@ -129,6 +129,11 @@ let create_player_colors pids =
     | h::t -> (h,cols.(n))::(colorer t (n+1))
   in (no_one,rgb 33 33 33)::(colorer pids 0)
 
+let terr_color gs terr =
+  let id = get_territory_owner gs terr in
+  let (_,c) = List.find (fun (n,_) -> (n = id)) !player_colors in
+  c
+
 let draw_text s x y scale color a =
   let newx = match a with
     | Left -> x
@@ -158,7 +163,7 @@ let create_ccmap gs =
   let rec add_cc lst n =
     match lst with
     | [] -> []
-    | (h,_,_)::t -> ((String.get cs n),blue)::(add_cc t (n+1))
+    | (h,_,_)::t -> ((String.get cs n),(terr_color gs h))::(add_cc t (n+1))
   in
   add_cc country_coor 0
 
