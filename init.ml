@@ -25,6 +25,14 @@ let distribute_territory (state:t) =
   in
   distribute_helper state terro_list
 
+let place_army  (state:t) player assigned_l =
+  let rec helper cur_state = function
+    | [] -> cur_state
+    | (num, terri)::t -> let new_state = set_num_armies cur_state terri num in
+                         new_state
+  in
+  helper assigned_l
+
 let set_first_player (state:t) =
   let player_list = get_player_id_list state in
   let num_player = List.length player_list in
