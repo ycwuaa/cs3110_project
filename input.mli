@@ -2,6 +2,7 @@
 (** Handles all game actions by human players*)
 
 open GameState
+open Output
 
 (** Gets the start configuration for the game (# of human, # of AI) *)
 val choose_start : unit -> int * int

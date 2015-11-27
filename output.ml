@@ -9,25 +9,25 @@ let cur_gs = ref (new_state ())
 let player_colors = ref []
 let country_coor = [
   ("Alaska",12,30);
-  ("Alberta",35,44);
-  ("Central America",34,76);
-  ("Eastern United States",55,68);
+  ("Alberta",36,43);
+  ("Central America",40,81);
+  ("Eastern United States",55,67);
   ("Greenland",85,22);
   ("Northwest Territory",41,29);
-  ("Ontario",52,48);
+  ("Ontario",52,46);
   ("Quebec",70,49);
-  ("Western United States",37,61);
+  ("Western United States",37,59);
   ("Argentina",62,142);
   ("Brazil",77,112);
   ("Peru",56,114);
-  ("Venezuela",57,99);
-  ("Great Britain",102,57);
-  ("Iceland",104,40);
-  ("Northern Europe",124,61);
-  ("Scandinavia",124,39);
-  ("Southern Europe",125,75);
+  ("Venezuela",59,97);
+  ("Great Britain",104,57);
+  ("Iceland",105,39);
+  ("Northern Europe",127,61);
+  ("Scandinavia",129,34);
+  ("Southern Europe",125,73);
   ("Ukraine",147,49);
-  ("Western Europe",104,84);
+  ("Western Europe",104,82);
   ("Congo",135,129);
   ("East Africa",151,120);
   ("Egypt",135,100);
@@ -38,16 +38,16 @@ let country_coor = [
   ("China",196,78);
   ("India",180,90);
   ("Irkutsk",198,48);
-  ("Japan",225,65);
+  ("Japan",226,63);
   ("Kamchatka",219,29);
-  ("Middle East",152,87);
+  ("Middle East",154,87);
   ("Mongolia",201,63);
-  ("Siam",200,97);
+  ("Siam",201,97);
   ("Siberia",180,24);
   ("Ural",169,43);
   ("Yakutsk",201,26);
   ("Eastern Australia",233,138);
-  ("Indonesia",205,124);
+  ("Indonesia",205,122);
   ("New Guinea",229,117);
   ("Western Australia",219,149)]
 
@@ -106,7 +106,8 @@ let rec plot_image img x y scale =
 
 let create_alphabet () =
   let ascii = read_file "alphabet.txt" in
-  let s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz0123456789:." in
+  let s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz0123456789:.><="
+  in
   let rec read_letter txt n =
     match txt with
     | [] -> []
@@ -158,21 +159,27 @@ let clear_screen () =
   set_color (rgb 128 128 128);
   fill_rect 0 0 1000 720
 
-let create_ccmap gs =
+let create_ccmap gs special =
   let cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnop" in
   let rec add_cc lst n =
     match lst with
     | [] -> []
-    | (h,_,_)::t -> ((String.get cs n),(terr_color gs h))::(add_cc t (n+1))
+    | (h,_,_)::t ->
+      let col = terr_color gs h in
+      let ncol = if(h = special) then col*2 else col in
+    ((String.get cs n),ncol)::(add_cc t (n+1))
   in
   add_cc country_coor 0
 
-let draw_map_info () =
+let draw_map_info gs =
   let rec drawer lst =
     match lst with
     | [] -> ()
     | (n,x,y)::t ->
-        draw_text n (x*4) (720-(y*4)+9) 1 white Center; drawer t
+        draw_text n (x*4) (720-(y*4)+9) 1 white Center;
+        let army = string_of_int (get_armies gs n) in
+        draw_text army (x*4) (720-(y*4)-3) 1 white Center;
+        drawer t
   in drawer country_coor
 
 (******************************************************************************)
@@ -180,18 +187,18 @@ let draw_map_info () =
 
 (** takes a message and displays it to the player e.g. "Please choose ..." *)
 let draw_message s =
-  set_color white;
-  fill_rect 0 680 1000 40;
-  draw_text s 8 684 4 black Left
+  set_color (rgb 128 128 128);
+  fill_rect 0 684 1000 36;
+  draw_text s 8 712 3 black Left
 
 (** takes a description and input string and displays it on the screen
  * e.g. draw_input_string "Enter name:" "Alice" will display
  * "Enter name: Alice" on the screen. *)
 let draw_input_string s input =
-  set_color white;
+  set_color (rgb 128 128 128);
   fill_rect 0 0 1000 40;
-  draw_text s 12 44 4 black Left;
-  draw_text input (12+(String.length s)*32) 44 4 blue Left
+  draw_text s 12 36 3 black Left;
+  draw_text input (12+(String.length s)*24) 36 3 blue Left
 
 (** takes a description and input int and displays it on the screen as in
  * draw_input_string *)
@@ -202,6 +209,7 @@ let draw_input_int s input =
 let draw_start () =
   open_graph " 1000x720+50-100";
   alphabet := (create_alphabet ());
+  clear_screen ();
   draw_text "CS3110 FA15" 500 160 4 black Center;
   draw_title ()
 
@@ -223,10 +231,10 @@ let draw_map gs =
   clear_screen ();
   let ascii = read_file "world.txt" in
   let empty = '.' in
-  let cmap = ('#',black)::(create_ccmap gs) in
+  let cmap = ('#',black)::(create_ccmap gs "") in
   let img = ascii_to_color ascii empty cmap in
   plot_image img 0 720 4;
-  draw_map_info ()
+  draw_map_info gs
 
 
 
@@ -237,24 +245,16 @@ let draw_battle gs attack defend arolls drolls =
 
 (** takes a gamestate and a territory and displays the same map as in
  * redraw_map except with the territory highlighted. *)
-let draw_highlight gs tert =
-  failwith "TODO"
+let draw_highlight gs terr =
+  if(!player_colors = [])
+    then player_colors := create_player_colors (get_player_id_list gs) else ();
+  clear_screen ();
+  let ascii = read_file "world.txt" in
+  let empty = '.' in
+  let cmap = ('#',black)::(create_ccmap gs terr) in
+  let img = ascii_to_color ascii empty cmap in
+  plot_image img 0 720 4;
+  draw_map_info gs
 
 
 
-let () = draw_start ();
-draw_input_int "Enter number of players:" 5;
-let id0 = (create_player 0) in
-let id1 = (create_player 1) in
-let id2 = (create_player 2) in
-let id3 = (create_player 3) in
-let id4 = (create_player 4) in
-let id5 = (create_player 5) in
-cur_gs := add_player !cur_gs id0 "Tomek" true;
-cur_gs := add_player !cur_gs id1 "Max" true;
-cur_gs := add_player !cur_gs id2 "Emily" true;
-cur_gs := add_player !cur_gs id3 "Kim" true;
-cur_gs := add_player !cur_gs id4 "Mark" true;
-cur_gs := add_player !cur_gs id5 "Joseph" true;
-draw_map !cur_gs;
-wait_for_exit () in ()
