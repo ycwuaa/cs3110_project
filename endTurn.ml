@@ -18,7 +18,7 @@ let check_defeated (state:t) =
     | [] -> []
     | h::t -> let terri = get_territories state h in
               if (List.length terri) = 0 then h::(helper t)
-              else []::(helper t)
+              else (helper t)
   in
   helper players
 
