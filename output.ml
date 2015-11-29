@@ -7,6 +7,7 @@ open Graphics
 let alphabet = ref []
 let cur_gs = ref (new_state ())
 let player_colors = ref []
+let dices = ref []
 let country_coor = [
   ("Alaska",12,30);
   ("Alberta",36,43);
@@ -56,6 +57,10 @@ type align = Right | Left | Center
 let rec wait_for_exit () =
   let a = read_key () in
   if a <> '' then wait_for_exit () else ()
+
+let rec wait_for_enter () =
+  let a = read_key () in
+  if a <> '\r' then wait_for_enter () else ()
 
 (* http://stackoverflow.com/questions/5774934/
  * how-do-i-read-in-lines-from-a-text-file-in-ocaml *)
@@ -147,7 +152,6 @@ let draw_text s x y scale color a =
   in
   String.iteri f s
 
-
 let draw_title () =
   let ascii = read_file "title.txt" in
   let empty = ' ' in
@@ -182,6 +186,25 @@ let draw_map_info gs =
         drawer t
   in drawer country_coor
 
+let create_dice () =
+  let ascii = read_file "dice.txt" in
+  let cmap = [('#',black);('X',rgb 16 16 16);('.',white)] in
+  let rec read_dice txt n =
+    match txt with
+    | [] -> []
+    | a::b::c::d::e::f::g::h::i::tl ->
+        (n, ascii_to_color [a;b;c;d;e;f;g;h;i] ' ' cmap)::read_dice tl (n+1)
+    | _ -> failwith "Failed to load dice"
+  in
+  dices := read_dice ascii 1
+
+let rec draw_dices lst x y =
+  match lst with
+  | [] -> ()
+  | h::t ->
+      let () = plot_image (lookup h !dices) x y 14 in
+      draw_dices t x (y-140)
+
 (******************************************************************************)
 (******************************************************************************)
 
@@ -189,7 +212,7 @@ let draw_map_info gs =
 let draw_message s =
   set_color (rgb 128 128 128);
   fill_rect 0 684 1000 36;
-  draw_text s 8 712 3 black Left
+  draw_text s 8 712 2 black Left
 
 (** takes a description and input string and displays it on the screen
  * e.g. draw_input_string "Enter name:" "Alice" will display
@@ -209,6 +232,7 @@ let draw_input_int s input =
 let draw_start () =
   open_graph " 1000x720+50-100";
   alphabet := (create_alphabet ());
+  create_dice ();
   clear_screen ();
   draw_text "CS3110 FA15" 500 160 4 black Center;
   draw_title ()
@@ -236,12 +260,24 @@ let draw_map gs =
   plot_image img 0 720 4;
   draw_map_info gs
 
-
-
 (** takes the game state, attacking territory, defending territory, and 2 lists
  * of dice rolls and then displays the data on the the screen to the player *)
 let draw_battle gs attack defend arolls drolls =
-  failwith "TODO"
+  if(!player_colors = [])
+    then player_colors := create_player_colors (get_player_id_list gs) else ();
+  let () = clear_screen () in
+  let () = draw_message (attack^" attacked "^defend) in
+  let aname = get_name gs (get_territory_owner gs attack) in
+  let dname = get_name gs (get_territory_owner gs defend) in
+  let acol = terr_color gs attack in
+  let dcol = terr_color gs defend in
+  let () = draw_text aname 250 600 5 acol Center in
+  let () = draw_text dname 750 600 5 dcol Center in
+  let () = draw_dices arolls 194 500 in
+  let () = draw_dices drolls 694 500 in
+  let () = draw_input_string "Press enter to continue." "" in
+  wait_for_enter ()
+
 
 (** takes a gamestate and a territory and displays the same map as in
  * redraw_map except with the territory highlighted. *)
