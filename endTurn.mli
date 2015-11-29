@@ -9,7 +9,8 @@ val move_army : t -> player_id -> int -> territory -> territory -> t
 
 (** check whether any player has won the game or not at the end of this turn
   * if no one win yet, return None else give back the int option contiaining
-  * the winning player_id. NOTICE: check_defeated should run before this*)
+  * the winning player_id. NOTICE: check_defeated & remove defeated players
+  * should run before this*)
 val check_win : t -> player_id option
 
 (** check whether any player is out at the end of this turn
