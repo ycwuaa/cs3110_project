@@ -163,7 +163,9 @@ let get_territories (gs:t) (player:player_id) :territory list =
   let rec get_terri lst =
     match lst with
     | [] -> []
-    | (x, _, _)::t -> x::(get_terri t)
+    | (t, id, _)::tl -> (
+      if id = player then t :: (get_terri tl)
+      else get_terri tl)
   in get_terri gs.territories
 
 (** use to identify it is a computer player or human*)
