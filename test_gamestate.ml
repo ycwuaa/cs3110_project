@@ -73,10 +73,6 @@ let state = set_active_player state no_one
 
 TEST_UNIT "set_active_player" = get_active_player state === no_one
 
-let state = remove_player state p1
-
-TEST_UNIT "remove_player" = get_player_id_list state === old_player_list
-
 (* returns the first continent in c_list or None if there are no continents *)
 let get_first_continent c_list =
   match c_list with
@@ -102,3 +98,6 @@ TEST_UNIT "get_continents" = get_continents state no_one === []
 
 TEST_UNIT "get_continents" = assert(check_cont_ownership p1 cont)
 
+let state = remove_player state p1
+
+TEST_UNIT "remove_player" = get_player_id_list state === old_player_list
