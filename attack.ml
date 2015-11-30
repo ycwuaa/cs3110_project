@@ -17,19 +17,23 @@ let roll_dice () : int =
   * die rolls; returns a pair of ints represnting the number or successes for
   * attacker and defender respectively*)
 let attack_outcome (attacker: int list) (defender: int list) : int*int =
-  (*takes in two int lists representing die rolls of each player and accumulates
-  score of each by comparing each int*)
+  (* put lists in descending order *)
+  let attacker = List.rev attacker in
+  let defender = List.rev defender in
+
+  (** takes in two int lists representing die rolls of each player and
+    * accumulates score of each by comparing each int *)
   let rec compare d1 d2 s1 s2 =
     match d1 with
     | [] -> (s1, s2)
     | hd1 :: tl1 -> (
       match d2 with
-      | [] -> compare tl1 [] (s1 + 1) s2
+      | [] -> (s1, s2)
       | hd2 :: tl2 ->
         if hd1 > hd2 then compare tl1 tl2 (s1+1) s2
         else compare tl1 tl2 s1 (s2 + 1))
   in
-  compare attacker defender 0 0
+    compare attacker defender 0 0
 
 (** returns and updated gamestate with n pieces removed from the given
   * territory *)
