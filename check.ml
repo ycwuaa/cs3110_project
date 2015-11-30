@@ -14,6 +14,19 @@ let check_add_player (state:t) is_human name =
   if (!human>=0 && !computer>=0 && ((!human)+(!computer))<=6) then true
   else false
 
+let check_all_players (state:t) =
+  let players = get_player_id_list state in
+  let human = ref 0 in
+  let computer = ref 0 in
+  let rec helper = function
+    | [] -> ()
+    | h::t -> if (get_is_human state h) then human:=!human+1
+              else computer:=!computer+1;helper t
+  in
+  helper players;
+  if (!human>=1 && ((!human)+(!computer))>=3)) then true
+  else false
+
 let check_army_enough (state:t) armies_l =
   let sum_up = List.fold_left (fun a b -> a+b) 0 armies_l in
   let players = get_player_id_list state in
