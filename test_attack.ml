@@ -71,3 +71,31 @@ TEST_UNIT = get_armies state terr1 === current
 let state = remove_pieces state 2 terr1
 
 TEST_UNIT "remove_pieces" = get_armies state terr1 === current - 2
+
+let state = set_num_armies state terr1 0
+
+TEST_UNIT "is_captured" = is_captured state terr1 ===  true
+
+
+let state = set_num_armies state terr1 1
+
+TEST_UNIT "is_captured" = is_captured state terr1 ===  false
+
+let state = set_num_armies state terr1 (-1)
+
+TEST_UNIT "is_captured" = is_captured state terr1 ===  true
+
+let p1 = create_player 1
+let state = add_player state p1 "test player1" true
+let state = set_territory_owner state terr1 p1
+let terr2 = List.hd (get_territories state no_one)
+
+let state = set_num_armies state terr1 (0)
+let state = set_num_armies state terr1 (0)
+
+let current1 = get_armies state terr1
+let current2 = get_armies state terr2
+let state = invade state 0 terr1 terr2
+
+TEST_UNIT "invade" = get_armies state terr1 ===  current1
+TEST_UNIT "invade" = get_armies state terr1 ===  current2
