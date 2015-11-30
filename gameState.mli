@@ -74,5 +74,5 @@ val string_of_territory : t -> territory -> string
 (** return the name of the given continent *)
 val string_of_continent : t -> continent -> string
 
-(** returns true if the two territories are adjacent *)
+(** returns the adjacent territory list *)
 val get_adjacency : t -> territory -> territory list
