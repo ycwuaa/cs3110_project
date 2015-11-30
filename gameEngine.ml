@@ -7,7 +7,7 @@ let rec place_all gs p' num_new_pieces =
   if num_new_pieces <= 0 then
     gs
   else
-    let (num, where) = AI.place_new_armies gs p' num_new_pieces in
+    let (num, where) = AI.place_new_armies gs num_new_pieces in
     let curr_armies = get_armies gs where in
     let _ = Printf.printf "Player %s puts %d pieces on %s \n" (get_name gs p') num (string_of_territory gs where) in
     let _ = Printf.printf "%d armies left\n" num_new_pieces in
@@ -20,7 +20,7 @@ let rec place_all gs p' num_new_pieces =
 
 (* keep ask to attack until None *)
 let rec do_attack gs p' =
-  match (AI.choose_attack gs p') with
+  match (AI.choose_attack gs) with
   | None -> gs
   | Some (from, toward, num_dice) ->
     let _ = Printf.printf "Attacking from %s to %s with %d armies\n" (string_of_territory gs from) (string_of_territory gs toward) num_dice in
