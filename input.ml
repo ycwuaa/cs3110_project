@@ -192,10 +192,12 @@ let get_yn () =
 let rec choose_start () =
   let () = init_world_map () in
   let () = draw_message "Max players = 6." in
-  let humans = get_int "Enter number of humans:" 0 6 in
+  let humans = get_int "Enter number of humans:" 1 6 in
   let () = draw_message "Max players = 6." in
   let ais = get_int "Enter number of AI:" 0 (6-humans) in
-  (humans, ais)
+  if(humans + ais >= 3)
+  then (humans, ais)
+  else choose_start ()
 
 (** Returns whether the player wants to play again. *)
 let play_again () =
