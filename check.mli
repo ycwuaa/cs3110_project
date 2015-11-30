@@ -10,6 +10,9 @@ open GameState
   * 4. name is not empty*)
 val check_add_player : t -> bool -> string -> bool
 
+(** check that human players >=1, total players >=3*)
+val check_all_players : t -> bool
+
 (** use for init stage. use [current state] to figure out how many players in
   * the game. and take in the [army for each territory] to see if the sum
   * exceeds the total distribute to the player*)
