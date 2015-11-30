@@ -51,3 +51,7 @@ let choose_move_conquerors (gs:t) (terr1:territory)
 
 let redistribute_armies  (gs:t) =
   None
+
+let choose_dice (gs:t) (terr1:territory) (terr2:territory) (num_enemy:int)
+  (max_dice:int) =
+  max_dice

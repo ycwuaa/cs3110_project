@@ -28,3 +28,8 @@ val choose_move_conquerors : t -> territory -> territory -> int -> int
  * move [num] armies from the [from] territory to the [to] territory, or None if
  * no redistribution is desired *)
 val redistribute_armies : t -> (territory * territory * int) option
+
+(** takes in a GameState, a territory attacking from, a territory being
+ * attacked, and the number of dice enemy is using and maximum number of dice
+ * the player can defend with and returns the chosen number of dice *)
+val choose_dice : t -> territory -> territory -> int -> int -> int
