@@ -53,7 +53,8 @@ let is_captured (state: t) (terr: territory): bool =
   if num < 1 then true else false
 
 (** updates the game state by moving n pieces of allied with the owner of the
-  * first territory to the second territory *)
+  * first territory to the second territory, assumes player has at least [n]
+  * pieces in [terr1]*)
 let invade (state: t) (n: int) (terr1: territory) (terr2: territory): t =
   (*get terr1 owner pid*)
   let player = get_territory_owner state terr1 in

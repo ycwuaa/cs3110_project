@@ -22,7 +22,8 @@ val remove_pieces : t -> int -> territory -> t
 val is_captured : t -> territory -> bool
 
 (** updates the game state by moving n pieces of allied with the owner of the
-  * first territory to the second territory *)
+  * first territory to the second territory, assumes player has at least [n]
+  * pieces in [terr1]*)
 val invade : t -> int -> territory -> territory -> t
 
 (** returns true if there are enough peices in territory for its owner to
