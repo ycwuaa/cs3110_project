@@ -8,6 +8,8 @@ open Random
 
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)
 let roll_dice () : int =
+  (* seed random *)
+  let _ init 100 in
   (*get number between 0 and 5 (inclusive)*)
   let result = int 6 in
   (*add 1 to result and return*)
@@ -48,7 +50,7 @@ let remove_pieces (state: t) (n: int) (terr: territory): t =
  ** pieces have been removed from the territory, false otherwise *)
 let is_captured (state: t) (terr: territory): bool =
   let num = get_armies state terr in
-  if num = 0 then true else false
+  if num < 1 then true else false
 
 (** updates the game state by moving n pieces of allied with the owner of the
   * first territory to the second territory *)
