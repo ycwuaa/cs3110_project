@@ -98,4 +98,13 @@ let current2 = get_armies state terr2
 let state = invade state 0 terr1 terr2
 
 TEST_UNIT "invade" = get_armies state terr1 ===  current1
-TEST_UNIT "invade" = get_armies state terr1 ===  current2
+TEST_UNIT "invade" = get_armies state terr2 ===  current2
+
+let state = set_num_armies state terr1 (3)
+
+let current1 = get_armies state terr1
+let current2 = get_armies state terr2
+let state = invade state 3 terr1 terr2
+
+TEST_UNIT "invade" = get_armies state terr1 ===  current1 - 3
+TEST_UNIT "invade" = get_armies state terr2 ===  current2 + 3

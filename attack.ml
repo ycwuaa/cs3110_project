@@ -9,7 +9,7 @@ open Random
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)
 let roll_dice () : int =
   (* seed random *)
-  let _ init 100 in
+  let _ = init 100 in
   (*get number between 0 and 5 (inclusive)*)
   let result = int 6 in
   (*add 1 to result and return*)
