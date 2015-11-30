@@ -10,11 +10,9 @@ let distribute_territory (state:t) =
   let start = ref 0 in
   let check () =
     if ((!counter) mod num_player) = 0 then
-<<<<<<< HEAD
       (counter:=0; start:=(Random.int num_player))
       let _ = counter:=0 in
       start:=Random.int num_player
->>>>>>> f4ca6877bd69f5309071c480a55ad5cdd1a2437e
     else ()
   in
   let rec distribute_helper cur_state remain_terro =
