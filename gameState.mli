@@ -42,6 +42,12 @@ val get_territory_owner : t -> territory -> player_id
 (** get a list of continents controlled by player_id, returns [] if no continents are held *)
 val get_continents : t -> player_id -> continent list
 
+(** returns a list of all continents in the game *)
+val get_all_continents : t -> continent list
+
+(** returns a list of all territories in the game *)
+val get_all_territories : t -> territory list
+
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
 val set_num_armies : t -> territory -> int -> t
@@ -49,6 +55,9 @@ val set_num_armies : t -> territory -> int -> t
 (** given the territory and the new owner's playerid to
   * set the new owner of the territory*)
 val set_territory_owner : t -> territory -> player_id -> t
+
+(** sets player_id to be the owner of continent *)
+val set_continent_owner : t -> player_id -> continent -> t
 
 (** remove a player from the game by giving the playerid*)
 val remove_player : t -> player_id -> t
@@ -66,4 +75,4 @@ val string_of_territory : t -> territory -> string
 val string_of_continent : t -> continent -> string
 
 (** returns true if the two territories are adjacent *)
-val check_adjacency : t -> territory -> territory -> bool
+val get_adjacency : t -> territory -> territory list
