@@ -145,7 +145,7 @@ let new_state () =
   { territories = create_territories ();
     active_player = -1;
     continents = create_continents ();
-    continent_owners = create_cowners ();
+    continent_owners = [];
     player_info = [];
     map = create_connections ()
   }
@@ -163,7 +163,9 @@ let get_territories (gs:t) (player:player_id) :territory list =
   let rec get_terri lst =
     match lst with
     | [] -> []
-    | (x, _, _)::t -> x::(get_terri t)
+    | (t, id, _)::tl -> (
+      if id = player then t :: (get_terri tl)
+      else get_terri tl)
   in get_terri gs.territories
 
 (** use to identify it is a computer player or human*)
@@ -312,4 +314,3 @@ let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
-
