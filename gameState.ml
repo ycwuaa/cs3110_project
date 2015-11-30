@@ -145,7 +145,7 @@ let new_state () =
   { territories = create_territories ();
     active_player = -1;
     continents = create_continents ();
-    continent_owners = create_cowners ();
+    continent_owners = [];
     player_info = [];
     map = create_connections ()
   }
@@ -314,4 +314,3 @@ let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
-
