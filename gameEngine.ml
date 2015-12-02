@@ -5,38 +5,71 @@ open GameState
 (* ask the active player to place new armies at the beginning of the turn
  * parameters: a game state [gs], the active player [p'], and the number of new
  *   pieces to place [num_new_pieces]
- * returns: a new game state with these newly placed armies
- *
- * TODO: remove p' as a parameter, as it can be read from gs*)
-let rec place_all_turn gs num_new_pieces =
+ * returns: a new game state with these newly placed armies *)
+ let rec place_all_turn gs num_new_pieces =
   let p' = get_active_player gs in
   if num_new_pieces <= 0 then
     gs
-  else
+  (* if current player is AI *)
+  else if not (get_is_human gs p') then
     let (num, where) = AI.place_new_armies gs num_new_pieces in
     let curr_armies = get_armies gs where in
-    let _ = Printf.printf "Player %s puts %d pieces on %s \n" (get_name gs p') num (string_of_territory gs where) in
+    let _ = Printf.printf "Player %s puts %d pieces on %s \n"
+      (get_name gs p') num (string_of_territory gs where) in
     let _ = Printf.printf "%d armies left\n" num_new_pieces in
     let gs = set_num_armies gs where (curr_armies + num) in
-    let _ = Printf.printf "%d armies are now on %s\n" (get_armies gs where) (string_of_territory gs where) in
+    let _ = Printf.printf "%d armies are now on %s\n"
+      (get_armies gs where) (string_of_territory gs where) in
+    place_all_turn gs (num_new_pieces - num)
 
+  (* if current player is Human *)
+  else
+    let (num, where) = Input.place_new_armies gs num_new_pieces in
+    let curr_armies = get_armies gs where in
+    let _ = Printf.printf "Player %s puts %d pieces on %s \n"
+      (get_name gs p') num (string_of_territory gs where) in
+    let _ = Printf.printf "%d armies left\n" num_new_pieces in
+    let gs = set_num_armies gs where (curr_armies + num) in
+    let _ = Printf.printf "%d armies are now on %s\n"
+      (get_armies gs where) (string_of_territory gs where) in
 
-
-    place_all_turn gs p' (num_new_pieces - num)
+    place_all_turn gs (num_new_pieces - num)
 
 (* ask the active player if (s)he wants to attack
  * parameters: a game state [gs] and the active player [p']
  * returns: a new game state representing the situation after the attacks are
  *   performed
  *
- * TODO: remove p' as a parameter, as it can be read from gs *)
-let rec do_attack gs p' =
-  match (AI.choose_attack gs) with
-  | None -> gs
-  | Some (from, toward, num_dice) ->
-    let _ = Printf.printf "Attacking from %s to %s with %d armies\n" (string_of_territory gs from) (string_of_territory gs toward) num_dice in
-    let gs = gs in (* TODO: actually update the gs *)
-    do_attack gs p'
+ * TODO: something different for human players*)
+let rec do_attack gs =
+  (** rolls dice n times and returns resuls in a list *)
+  let rec rolls n =
+    match n with
+    | 0 -> []
+    | _ -> Attack.roll_dice :: (rolls (n - 1))
+  in
+
+  (** *)
+
+
+  let p' = get_active_player gs in
+  if not (get_is_human gs p') then
+    match (AI.choose_attack gs) with
+    | None -> gs
+    | Some (from, toward, num_dice) ->
+      let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
+        (string_of_territory gs from) (string_of_territory gs toward) num_dice in
+      let gs = gs in (* TODO: actually update the gs *)
+      do_attack gs
+
+  else
+    match (Input.choose_attack gs) with
+    | None -> gs
+    | Some (from, toward, num_dice) ->
+      let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
+        (string_of_territory gs from) (string_of_territory gs toward) num_dice in
+      let gs = gs in (* TODO: actually update the gs *)
+      do_attack gs
 
 (** perform one player's turn
  * returns unit only once the game ends *)
@@ -45,10 +78,10 @@ let rec turn gs =
   (* start turn *)
   let num_new_pieces = BeginTurn.award_pieces gs current_player in
   let _ = Printf.printf "Player %s gets %d new pieces\n" (get_name gs current_player) num_new_pieces in
-  let gs = place_all_turn gs current_player num_new_pieces in
+  let gs = place_all_turn gs num_new_pieces in
 
   (* ask for attack *)
-  let gs = do_attack gs current_player in
+  let gs = do_attack gs in
 
   (* end turn *)
   (* TODO *)

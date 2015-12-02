@@ -24,7 +24,7 @@ let check_all_players (state:t) =
               else computer:=!computer+1;helper t
   in
   helper players;
-  if (!human>=1 && ((!human)+(!computer))>=3)) then true
+  if (!human>=1 && ((!human)+(!computer))>=3) then true
   else false
 
 let check_army_enough (state:t) armies_l =
