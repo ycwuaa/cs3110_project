@@ -218,6 +218,7 @@ let rec turn gs =
  *  the turns are handled in a call to [turn], which loops until someone wins *)
 let main () =
   try
+    let _ = Output.draw_start () in
     let gs = new_state () in
     (* initialize game state *)
     let gs = init_game gs in
