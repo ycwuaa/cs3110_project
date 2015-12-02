@@ -2,6 +2,9 @@
 
 open GameState
 
+(** returns an updated versions of [state] with a user-defined number of players
+  * and armies awareded distributed on territories by players, takes in current
+  * (new) [state] *)
 let init_game state =
   let (human, computer) = Input.choose_start () in
   let rec get_name_id id bound cur_state is_human =
@@ -106,9 +109,7 @@ let end_turn state =
 (* ask the active player if (s)he wants to attack
  * parameters: a game state [gs] and the active player [p']
  * returns: a new game state representing the situation after the attacks are
- *   performed
- *
- * TODO: something different for human players*)
+ *   performed *)
 let rec do_attack gs =
   (** rolls dice n times and returns resuls in a list *)
   let rec rolls n =
@@ -186,8 +187,8 @@ let rec do_attack gs =
       else
         do_attack gs
 
-(** perform one player's turn
- * returns unit only once the game ends *)
+(** perform one player's turn with current state [gs]
+  * returns unit only once womeone wins the game *)
 let rec turn gs =
   let current_player = get_active_player gs in
   (* start turn *)
@@ -203,6 +204,7 @@ let rec turn gs =
   (* end turn *)
   let end_gs = end_turn gs in
 
+  (* exit turn if someone has won, play next turn otherwise *)
   match end_gs with
   | None -> ()
   | Some state -> let gs = state in
@@ -213,22 +215,17 @@ let rec turn gs =
 
 (** the main function; calling this runs the program
  *  written physically in this function is initialization code;
- *  the turns are handled in a call to [turn] (which recurses on itself) *)
+ *  the turns are handled in a call to [turn], which loops until someone wins *)
 let main () =
   try
     let gs = new_state () in
-
-    (* initialize game state
-     * TODO: this is all just a stub*)
-    let player0 = create_player 0 in
-    let gs = GameState.add_player gs player0 (AI.choose_name () ) false in
-    let gs = Init.set_first_player gs in
-    (* TODO: should create_player just take in a unit? *)
-
-    turn gs
-
+    (* initialize game state *)
+    let gs = init_game gs in
+    (* begin game loop *)
+    let _ = turn gs in
     (* end game *)
-    (* TODO*)
+    print_endline "Thanks for playing!"
+
   with
   | e ->
     print_endline "Oh no! Something failed! Quitting now.";
