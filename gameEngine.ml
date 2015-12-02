@@ -49,8 +49,25 @@ let init_game state =
 (** returns a gameState option with either an updated state, or None if a player
   * has won; removes any losing players (in rounds when game is not won) *)
 let end_turn state =
-  Some state
-
+  let move_army = Input.redistribute_armies state in
+  let player = get_active_player state in
+  let after_move =
+    match move_army with
+    | None -> state
+    | Some (t1, t2, a) ->
+      EndTurn.move_army state player a t1 t2
+  in
+  let losers = EndTurn.check_defeated after_move in
+  let rec remove_list cur_state = function
+    | [] -> cur_state
+    | h::t -> let new_state = remove_player cur_state h in
+              remove_list new_state t
+  in
+  let after_remove = remove_list after_move losers in
+  let winner = EndTurn.check_win after_move in
+  match winner with
+  | None -> Some after_remove
+  | Some x -> Output.draw_end x; None
 
 
 (* ask the active player to place new armies at the beginning of the turn
