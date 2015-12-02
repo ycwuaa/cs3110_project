@@ -205,7 +205,7 @@ let main () =
     (* initialize game state *)
     let gs = init_game gs in
     (* begin game loop *)
-    turn gs
+    let _ = turn gs in
     (* end game *)
     print_endline "Thanks for playing!"
 
