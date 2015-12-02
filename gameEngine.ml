@@ -202,18 +202,13 @@ let rec turn gs =
 let main () =
   try
     let gs = new_state () in
-
     (* initialize game state *)
     let gs = init_game gs in
-
-    (* let player0 = create_player 0 in
-    let gs = GameState.add_player gs player0 (AI.choose_name () ) false in
-    let gs = Init.set_first_player gs in *)
-
+    (* begin game loop *)
     turn gs
-
     (* end game *)
-    (* TODO*)
+    print_endline "Thanks for playing!"
+
   with
   | e ->
     print_endline "Oh no! Something failed! Quitting now.";
