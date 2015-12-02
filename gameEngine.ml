@@ -83,9 +83,7 @@ let end_turn state =
 (* ask the active player if (s)he wants to attack
  * parameters: a game state [gs] and the active player [p']
  * returns: a new game state representing the situation after the attacks are
- *   performed
- *
- * TODO: something different for human players*)
+ *   performed *)
 let rec do_attack gs =
   (** rolls dice n times and returns resuls in a list *)
   let rec rolls n =
@@ -180,6 +178,7 @@ let rec turn gs =
   (* end turn *)
   let end_gs = end_turn gs in
 
+  (* exit turn if someone has won, play next turn otherwise *)
   match end_gs with
   | None -> ()
   | Some state -> let gs = state in
@@ -190,7 +189,7 @@ let rec turn gs =
 
 (** the main function; calling this runs the program
  *  written physically in this function is initialization code;
- *  the turns are handled in a call to [turn] (which recurses on itself) *)
+ *  the turns are handled in a call to [turn], which loops until someone wins *)
 let main () =
   try
     let gs = new_state () in
