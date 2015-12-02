@@ -122,7 +122,11 @@ let rec get_int txt min max =
       let err = "Please enter a valid number: "^
         (string_of_int min)^"<=n<="^(string_of_int max) in
       let () = draw_message err in get_int txt min max
-    else
+    else if(c = '\b' && s <> "") then
+      let ns = String.sub s 0 ((String.length s)-1) in
+        let () = draw_input_string txt ns in
+        loop (read_key ()) ns
+      else
       let ns = if(String.contains valid c) then s^(Char.escaped c) else s in
       let () = draw_input_string txt ns in
       loop (read_key ()) ns

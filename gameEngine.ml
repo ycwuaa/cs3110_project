@@ -46,7 +46,10 @@ let init_game state =
     get_army_distribute (human+computer-1) add_all_player in
   Init.set_first_player distribute_army_state
 
-(*let end_turn state =*)
+(** returns a gameState option with either an updated state, or None if a player
+  * has won; removes any losing players (in rounds when game is not won) *)
+let end_turn state =
+  Some state
 
 
 
@@ -172,18 +175,24 @@ let rec turn gs =
   let current_player = get_active_player gs in
   (* start turn *)
   let num_new_pieces = BeginTurn.award_pieces gs current_player in
-  let _ = Printf.printf "Player %s gets %d new pieces\n" (get_name gs current_player) num_new_pieces in
+  let _ = Printf.printf "Player %s gets %d new pieces\n"
+    (get_name gs current_player) num_new_pieces in
+  (* allow current player to place new pieces *)
   let gs = place_all_turn gs num_new_pieces in
 
   (* ask for attack *)
   let gs = do_attack gs in
 
   (* end turn *)
-  (* TODO *)
+  let end_gs = end_turn gs in
 
-  (* recurse
-   * TODO: increment current player *)
-  turn gs
+  match end_gs with
+  | None -> ()
+  | Some state -> let gs = state in
+    (* increment current player *)
+    let gs = set_next_player gs in
+    (* do next player's turn *)
+    turn gs
 
 (** the main function; calling this runs the program
  *  written physically in this function is initialization code;
@@ -201,7 +210,7 @@ let main () =
 
     turn gs
 
-    (* end game, or restart main if play again *)
+    (* end game *)
     (* TODO*)
   with
   | e ->
