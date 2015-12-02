@@ -5,8 +5,8 @@ open GameState
 let init_game state =
   let (human, computer) = Input.choose_start () in
   let rec get_name_id id bound cur_state is_human =
-    match
-    | id<bound -> cur_state
+    match id with
+    | id when id<bound -> cur_state
     | _ -> let new_player = create_player id in
            let new_name = if is_human then Input.choose_name ()
                           else AI.choose_name ()
@@ -22,22 +22,25 @@ let init_game state =
     | 4 -> 30
     | 5 -> 25
     | 6 -> 20
+    | _ -> failwith "invalid number of player"
   in
   let rec get_army_distribute id cur_state =
     match id with
-    | id > computer ->
+    | id when id > computer ->
       let list_army = Input.place_original_armies cur_state army_each in
-      let after_state = place_army cur_state list_army in
+      let after_state = Init.place_army cur_state list_army in
       get_army_distribute (id-1) after_state
-    | id >= 0 ->
+    | id when id >= 0 ->
       let list_army = AI.place_original_armies cur_state army_each in
-      let after_state = place_army cur_state list_army in
+      let after_state = Init.place_army cur_state list_army in
       get_army_distribute (id-1) after_state
     | _ -> cur_state
   in
   let distribute_army_state =
     get_army_distribute (human+computer-1) add_all_player in
-  set_first_player distribute_army_state
+  Init.set_first_player distribute_army_state
+
+(*let end_turn state =*)
 
 
 
