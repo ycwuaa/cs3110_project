@@ -2,6 +2,45 @@
 
 open GameState
 
+let init_game state =
+  let (human, computer) = Input.choose_start () in
+  let rec get_name_id id bound cur_state is_human =
+    match
+    | id<bound -> cur_state
+    | _ -> let new_player = create_player id in
+           let new_name = if is_human then Input.choose_name ()
+                          else AI.choose_name ()
+           in
+           let new_state = add_player cur_state new_player new_name is_human in
+           get_name_id (id-1) bound new_state is_human
+  in
+  let add_human_state = get_name_id (human+computer-1) (computer-1) state true in
+  let add_all_player = get_name_id (computer-1) 0 add_human_state false in
+  let army_each =
+    match (human+computer) with
+    | 3 -> 35
+    | 4 -> 30
+    | 5 -> 25
+    | 6 -> 20
+  in
+  let rec get_army_distribute id cur_state =
+    match id with
+    | id > computer ->
+      let list_army = Input.place_original_armies cur_state army_each in
+      let after_state = place_army cur_state list_army in
+      get_army_distribute (id-1) after_state
+    | id >= 0 ->
+      let list_army = AI.place_original_armies cur_state army_each in
+      let after_state = place_army cur_state list_army in
+      get_army_distribute (id-1) after_state
+    | _ -> cur_state
+  in
+  let distribute_army_state =
+    get_army_distribute (human+computer-1) add_all_player in
+  set_first_player distribute_army_state
+
+
+
 (* ask the active player to place new armies at the beginning of the turn
  * parameters: a game state [gs], the active player [p'], and the number of new
  *   pieces to place [num_new_pieces]
