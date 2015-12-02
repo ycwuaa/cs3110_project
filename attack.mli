@@ -31,3 +31,7 @@ val invade : t -> int -> territory -> territory -> t
 
     TODO: move to checking*)
 val check_min_pieces : t  -> int -> territory -> bool
+
+(** returns the maximum number of tie the player occupying [terr] can roll as
+  * a defender *)
+val max_defend : t -> territory -> int

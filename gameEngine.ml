@@ -111,8 +111,8 @@ let rec do_attack gs =
       (* determine humanity of defender *)
       let human = get_is_human gs (get_territory_owner gs toward) in
       let attacker_rolls = rolls num_dice in
-      (*TODO - write method to determine max # die defender can roll*)
-      let max = 0 in
+      (*determine max # die defender can roll*)
+      let max = Attack.max_defend gs toward in
       let num_dice_def = def_dice_choice gs from toward num_dice max human in
       let defender_rolls = rolls num_dice_def in
       let (outcome_a, outcome_d) =
@@ -141,8 +141,8 @@ let rec do_attack gs =
       let human = get_is_human gs (get_territory_owner gs toward) in
 
       let attacker_rolls = rolls num_dice in
-      (*TODO - write method to determine max # die defender can roll*)
-      let max = 0 in
+      (*determine max # die defender can roll*)
+      let max = Attack.max_defend gs toward in
       let num_dice_def = def_dice_choice gs from toward num_dice max human in
       let defender_rolls = rolls num_dice_def in
       let (outcome_a, outcome_d) =
