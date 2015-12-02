@@ -46,11 +46,17 @@ let rec do_attack gs =
   let rec rolls n =
     match n with
     | 0 -> []
-    | _ -> Attack.roll_dice :: (rolls (n - 1))
+    | _ -> Attack.roll_dice () :: (rolls (n - 1))
   in
 
-  (** *)
-
+  (** returns num dice chosen to roll - calls Input if [human] is true, AI
+    * otherwise*)
+  let def_dice_choice gs from toward num_dice max human =
+    if human then
+      Input.choose_dice gs from toward num_dice max
+    else
+      AI.choose_dice gs from toward num_dice max
+  in
 
   let p' = get_active_player gs in
   if not (get_is_human gs p') then
@@ -59,17 +65,58 @@ let rec do_attack gs =
     | Some (from, toward, num_dice) ->
       let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
         (string_of_territory gs from) (string_of_territory gs toward) num_dice in
-      let gs = gs in (* TODO: actually update the gs *)
-      do_attack gs
+
+      (* determine humanity of defender *)
+      let human = get_is_human gs (get_territory_owner gs toward) in
+      let attacker_rolls = rolls num_dice in
+      (*TODO - write method to determine max # die defender can roll*)
+      let max = 0 in
+      let num_dice_def = def_dice_choice gs from toward num_dice max human in
+      let defender_rolls = rolls num_dice_def in
+      let (outcome_a, outcome_d) =
+        Attack.attack_outcome attacker_rolls defender_rolls in
+
+      (* remove a piece from [from] for each defender victory *)
+      let gs = Attack.remove_pieces gs outcome_d from in
+      (* remove a piece from [toward] for each attacker victory *)
+      let gs = Attack.remove_pieces gs outcome_a toward in
+
+      if (Attack.is_captured gs toward) then
+        let invade_with = AI.choose_move_conquerors gs from toward num_dice in
+        let gs = Attack.invade gs invade_with from toward in
+        do_attack gs
+      else
+        do_attack gs
 
   else
     match (Input.choose_attack gs) with
     | None -> gs
     | Some (from, toward, num_dice) ->
       let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
-        (string_of_territory gs from) (string_of_territory gs toward) num_dice in
-      let gs = gs in (* TODO: actually update the gs *)
-      do_attack gs
+       (string_of_territory gs from) (string_of_territory gs toward) num_dice in
+
+      (* determine humanity of defender *)
+      let human = get_is_human gs (get_territory_owner gs toward) in
+
+      let attacker_rolls = rolls num_dice in
+      (*TODO - write method to determine max # die defender can roll*)
+      let max = 0 in
+      let num_dice_def = def_dice_choice gs from toward num_dice max human in
+      let defender_rolls = rolls num_dice_def in
+      let (outcome_a, outcome_d) =
+        Attack.attack_outcome attacker_rolls defender_rolls in
+
+      (* remove a piece from [from] for each defender victory *)
+      let gs = Attack.remove_pieces gs outcome_d from in
+      (* remove a piece from [toward] for each attacker victory *)
+      let gs = Attack.remove_pieces gs outcome_a toward in
+
+      if (Attack.is_captured gs toward) then
+        let invade_with = Input.choose_move_conquerors gs from toward num_dice in
+        let gs = Attack.invade gs invade_with from toward in
+        do_attack gs
+      else
+        do_attack gs
 
 (** perform one player's turn
  * returns unit only once the game ends *)
