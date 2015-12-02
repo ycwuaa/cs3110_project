@@ -13,8 +13,9 @@ val play_again : unit -> bool
 (** Gets the player name at the beginning of the game.*)
 val choose_name : unit -> string
 
-(** at the beginning of the game, receive a few additional armies; return
- * a list of where to put these extra armies *)
+(** at the beginning of the game (after the first army on each territory is
+ * placed automatically), decide where to put the remaining armies, and return a
+ * corresponding (int * territory) list *)
 val place_original_armies: t -> int -> (int * territory) list
 
 (** takes in a GameState and the number of extra armies received, and returns
