@@ -166,7 +166,9 @@ let rec turn gs =
   let current_player = get_active_player gs in
   (* start turn *)
   let num_new_pieces = BeginTurn.award_pieces gs current_player in
-  let _ = Printf.printf "Player %s gets %d new pieces\n" (get_name gs current_player) num_new_pieces in
+  let _ = Printf.printf "Player %s gets %d new pieces\n"
+    (get_name gs current_player) num_new_pieces in
+  (* allow current player to place new pieces *)
   let gs = place_all_turn gs num_new_pieces in
 
   (* ask for attack *)
@@ -175,8 +177,9 @@ let rec turn gs =
   (* end turn *)
   (* TODO *)
 
-  (* recurse
-   * TODO: increment current player *)
+  (* increment current player *)
+  let gs = set_next_player gs in
+  (* do next player's turn *)
   turn gs
 
 (** the main function; calling this runs the program
@@ -195,7 +198,7 @@ let main () =
 
     turn gs
 
-    (* end game, or restart main if play again *)
+    (* end game *)
     (* TODO*)
   with
   | e ->
