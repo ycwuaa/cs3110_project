@@ -76,3 +76,9 @@ val string_of_continent : t -> continent -> string
 
 (** returns the adjacent territory list *)
 val get_adjacency : t -> territory -> territory list
+
+(** return the continent that the territory is in *)
+val get_continent_of_terr : t -> territory -> continent
+
+(** get a list of territories in the given continent *)
+val get_continent_territories : t -> continent -> territory list

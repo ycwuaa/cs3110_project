@@ -22,6 +22,25 @@ let choose_name =
     let _ = incr curr_int in
     returnVal
 
+(* return a list of (continent, percentage of territories on that continent that
+ * the active player owns) *)
+let get_my_continents (gs:t) : (continent * float) list =
+  let p' = get_active_player gs in
+
+  (* return the number of territories in the continent owned by p' *)
+  let num_my_territories cont =
+    List.length (List.filter
+      (fun terr -> (get_territory_owner gs terr) = p')
+      (get_continent_territories gs cont) )
+    in
+
+  List.map (fun cont ->
+    ( cont ,
+      float_of_int ( num_my_territories cont ) /.
+      float_of_int ( List.length (get_continent_territories gs cont) )
+    )
+  ) (get_all_continents gs)
+
 (* current strategy: place equally everywhere *)
 let place_original_armies (gs:t) (num_new:int) =
   let p' = get_active_player gs in
@@ -63,9 +82,17 @@ let rec get_attack_options gs usable_terr acc =
 (* rate the attacking options from a given; return a (rank, from, target) tuple
  * currently just prioritize highest difference in army size *)
 let rank_attack_option gs (from, target) : rank * territory * territory =
-  let from_armies = float_of_int (get_armies gs from) in
-  let target_armies = float_of_int (get_armies gs target) in
-  (from_armies -. target_armies, from, target)
+  (* target territories that are easier to take over *)
+  let army_diff = float_of_int (get_armies gs from - get_armies gs target) in
+  (* prioritize taking over continents that I already own most of *)
+  let ownership_bonus = List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
+
+  (
+      army_diff       *. 0.9
+   +. ownership_bonus *. 1.5
+
+   , from, target
+  )
 
 (* cmp function for sorting, as specified by List.sort and Array.sort
  * reverse the call to compare so that the sort is in decreasing order *)
@@ -83,13 +110,14 @@ let choose_attack (gs:t) =
   let all_options = get_attack_options gs usable_terr [] in
   let all_ranks = List.map (rank_attack_option gs) all_options in
   let sorted_ranks = List.sort cmp_ranks all_ranks in
-  let _ = print_list (fun (rnk, t1, t2) -> Printf.sprintf "%f: %10s to %10s" rnk t1 t2) sorted_ranks in
+  let _ = print_list (fun (rnk, t1, t2) -> Printf.sprintf "%7f: %12s to %12s" rnk t1 t2) sorted_ranks in
 
-  if all_ranks = [] then
+  if sorted_ranks = [] then
     None
   else
     match List.hd sorted_ranks with
-    | (_, from, target) ->
+    | (rnk, from, target) when rnk < 1.0 -> None
+    | (rnk, from, target) ->
       let num_armies = (get_armies gs from) - 1 in
       Some (from, target, min num_armies 3) (* TODO: put the constant 3 in another module as a contant? *)
 

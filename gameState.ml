@@ -314,3 +314,19 @@ let get_adjacency (gs:t) (terr1:territory) : territory list =
   (* let neighbors = List.assoc terr1 gs.map in
   List.mem terr2 neighbors *)
   List.assoc terr1 gs.map
+
+(** return the continent that the territory is in *)
+let get_continent_of_terr (gs:t) (terr:territory) : continent =
+  let (cont, _) =
+    List.hd (
+      List.filter
+        (fun (_, tlist) ->
+          List.mem terr tlist
+        )
+      gs.continents
+    ) in
+  cont
+
+(** get a list of territories in the given continent *)
+let get_continent_territories (gs:t) (cont:continent) : territory list =
+  List.assoc cont gs.continents
