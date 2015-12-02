@@ -76,3 +76,8 @@ let check_min_pieces (state: t)  (n: int) (terr: territory): bool =
   let num_pieces = get_armies state terr in
   if n >= num_pieces then false else true
 
+(** returns the maximum number of tie the player occupying [terr] can roll as
+  * a defender *)
+let max_defend (state: t) (terr: territory): int =
+  let pieces = get_armies state terr in
+  if pieces >= 2 then 2 else 1
