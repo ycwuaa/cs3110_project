@@ -40,7 +40,10 @@ let init_game state =
     get_army_distribute (human+computer-1) add_all_player in
   Init.set_first_player distribute_army_state
 
-(*let end_turn state =*)
+(** returns a gameState option with either an updated state, or None if a player
+  * has won; removes any losing players (in rounds when game is not won) *)
+let end_turn state =
+  Some state
 
 
 
@@ -175,12 +178,15 @@ let rec turn gs =
   let gs = do_attack gs in
 
   (* end turn *)
-  (* TODO *)
+  let end_gs = end_turn gs in
 
-  (* increment current player *)
-  let gs = set_next_player gs in
-  (* do next player's turn *)
-  turn gs
+  match end_gs with
+  | None -> ()
+  | Some state -> let gs = state in
+    (* increment current player *)
+    let gs = set_next_player gs in
+    (* do next player's turn *)
+    turn gs
 
 (** the main function; calling this runs the program
  *  written physically in this function is initialization code;
