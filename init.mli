@@ -2,7 +2,8 @@
 
 open GameState
 
-(** distribute the terriyories randomly to all the players*)
+(** distribute the terriyories randomly to all the players and give on army
+  * on each territory*)
 val distribute_territory : t -> t
 
 (** place the army as the player indicates : who(player_id), how many and where*)
