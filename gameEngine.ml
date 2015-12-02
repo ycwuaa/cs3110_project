@@ -27,11 +27,17 @@ let init_game state =
   let rec get_army_distribute id cur_state =
     match id with
     | id when id > computer ->
-      let list_army = Input.place_original_armies cur_state army_each in
+      let player = create_player id in
+      let army_ed = List.length (get_territories cur_state player) in
+      let list_army =
+        Input.place_original_armies cur_state (army_each-army_ed) in
       let after_state = Init.place_army cur_state list_army in
       get_army_distribute (id-1) after_state
     | id when id >= 0 ->
-      let list_army = AI.place_original_armies cur_state army_each in
+      let player = create_player id in
+      let army_ed = List.length (get_territories cur_state player) in
+      let list_army =
+        AI.place_original_armies cur_state (army_each-army_ed) in
       let after_state = Init.place_army cur_state list_army in
       get_army_distribute (id-1) after_state
     | _ -> cur_state
