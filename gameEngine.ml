@@ -2,6 +2,9 @@
 
 open GameState
 
+(** returns an updated versions of [state] with a user-defined number of players
+  * and armies awareded distributed on territories by players, takes in current
+  * (new) [state] *)
 let init_game state =
   let (human, computer) = Input.choose_start () in
   let rec get_name_id id bound cur_state is_human =
@@ -167,8 +170,8 @@ let rec do_attack gs =
       else
         do_attack gs
 
-(** perform one player's turn
- * returns unit only once the game ends *)
+(** perform one player's turn with current state [gs]
+  * returns unit only once womeone wins the game *)
 let rec turn gs =
   let current_player = get_active_player gs in
   (* start turn *)
@@ -200,12 +203,12 @@ let main () =
   try
     let gs = new_state () in
 
-    (* initialize game state
-     * TODO: this is all just a stub*)
-    let player0 = create_player 0 in
+    (* initialize game state *)
+    let gs = init_game gs in
+
+    (* let player0 = create_player 0 in
     let gs = GameState.add_player gs player0 (AI.choose_name () ) false in
-    let gs = Init.set_first_player gs in
-    (* TODO: should create_player just take in a unit? *)
+    let gs = Init.set_first_player gs in *)
 
     turn gs
 
