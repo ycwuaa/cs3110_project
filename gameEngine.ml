@@ -8,7 +8,8 @@ open GameState
  * returns: a new game state with these newly placed armies
  *
  * TODO: remove p' as a parameter, as it can be read from gs*)
-let rec place_all_turn gs p' num_new_pieces =
+let rec place_all_turn gs num_new_pieces =
+  let p' = get_active_player gs in
   if num_new_pieces <= 0 then
     gs
   else
