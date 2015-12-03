@@ -1,35 +1,25 @@
 open GameState
 
-let distribute_territory (state:t) =
+let distribute_territory (gs:t) =
+  (* http://stackoverflow.com/questions/15095541/
+ * how-to-shuffle-list-in-on-in-ocaml *)
+  let shuffle d =
+    let () = Random.self_init () in
+    let nd = List.map (fun c -> (Random.bits (), c)) d in
+    let sond = List.sort compare nd in
+    List.map snd sond
+  in
 
-  (** check with the default value later*)
-  let terro_list = get_territories state no_one in
-  let player_list = get_player_id_list state in
-  let num_player = List.length player_list in
-  let counter = ref 0 in
-  let start = ref 0 in
-  let check () =
-    if ((!counter) mod num_player) = 0 then
-      (counter:=0; start:=(Random.int num_player))
-    else ()
+  let terrs = shuffle (get_all_territories gs) in
+  let cur = get_active_player gs in
+  let give ngs terr =
+    let p = get_active_player ngs in
+    set_territory_owner ngs terr p |>
+    fun x -> set_num_armies x terr 1 |>
+    set_next_player
   in
-  let rec distribute_helper cur_state remain_terro =
-    check ();
-    match terro_list with
-    | [] -> cur_state
-    | h::t ->
-      let cur_player = List.nth player_list ((!start) mod num_player) in
-      let new_state = set_territory_owner cur_state h cur_player in
-      counter:=(!counter)+1; start:=(!start)+1;
-      distribute_helper new_state t
-  in
-  let after_set_owner = distribute_helper state terro_list in
-  let rec give_one_army cur_state = function
-    | [] -> cur_state
-    | h::t -> let new_state = set_num_armies cur_state h 1 in
-              give_one_army new_state t
-  in
-  give_one_army after_set_owner (get_all_territories after_set_owner)
+  (List.fold_left give gs terrs) |>
+  fun x -> set_active_player x cur
 
 let place_army (state:t) assigned_l =
   let rec helper cur_state = function

@@ -5,15 +5,29 @@ open GameState
 (* for internal judg(e)ments about which move to make
  * higher rank = more preferable *)
 type rank = float
+let army_size_multiplier = 0.9 (*prioritize difference in army size*)
+let near_ownership_multiplier = 1.5 (*prioritize my almost-owned continents*)
+
+(*
+
+let enemy_ownership_multiplier = 2.0 (*prioritize disrupting enemy continents*)
+let my_ownership_multiplier = 2.0 (*prioritize defending own continents*)
+
+*)
+
 
 (* helper debug function to print out a territory list *)
-let rec print_list tostring = function
-| [] -> ()
-| h::t ->
-  let _ = Printf.printf " @ %s\n" (tostring h) in
-  print_list tostring t
+let print_list tostring lst =
+  let rec helper num = function
+  | [] -> ()
+  | h::t ->
+    let _ = Printf.printf " %d. %s\n" num (tostring h) in
+    helper (num + 1) t
+  in
+  helper 1 lst
 
 
+(** EXPOSED FUNCTIONS **)
 
 let choose_name =
   let curr_int = ref 1 in
@@ -47,18 +61,31 @@ let place_original_armies (gs:t) (num_new:int) =
   let my_terr = get_territories gs p' in
   let num_terr = List.length my_terr in
 
-  (* divide up the [dividend] into a list of length [divisor] *)
+
+  (* divide up the int [dividend] into a list of length [divisor] whose sum is
+   * [dividend] and whose values are roughly equal
+   * precondition: there are at least as many dividend >= divisor *)
   let rec divide_up dividend divisor acc =
-    if dividend <= 0 then
+    if divisor <= 0 then
       acc
-    else if dividend < divisor then
-      dividend::acc
     else
-      let quotient = dividend / divisor in
+      let quotient =
+        if dividend > 0 then
+          max 1 (dividend / divisor) (* if any left, round up *)
+        else
+          0 (* none left: can't add any more *)
+        in
       divide_up (dividend - quotient) (divisor - 1) (quotient::acc)
     in
 
   let number_list = divide_up num_new num_terr [] in
+
+  (* let _ = Printf.printf "%s" (get_name gs p') in *)
+  let () = print_list (string_of_territory gs) my_terr in
+  let () = Printf.printf "\nNumber of territories: %d\n" num_terr in
+  let () = Printf.printf "\nNumber of armies: %d\n" num_new in
+  let () = print_list (string_of_int) number_list in
+
   List.combine number_list my_terr
 
 (* current strategy: place everything on the first territory found *)
@@ -85,11 +112,11 @@ let rank_attack_option gs (from, target) : rank * territory * territory =
   (* target territories that are easier to take over *)
   let army_diff = float_of_int (get_armies gs from - get_armies gs target) in
   (* prioritize taking over continents that I already own most of *)
-  let ownership_bonus = List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
+  let near_ownership_bonus = List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
 
   (
-      army_diff       *. 0.9
-   +. ownership_bonus *. 1.5
+      army_diff       *. army_size_multiplier
+   +. near_ownership_bonus *. near_ownership_multiplier
 
    , from, target
   )
