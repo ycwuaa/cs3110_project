@@ -9,12 +9,12 @@ let cur_gs = ref (new_state ())
 let player_colors = ref []
 let dices = ref []
 let country_coor = [
-  ("Alaska",12,30);
-  ("Alberta",36,43);
+  ("Alaska",12,31);
+  ("Alberta",36,41);
   ("Central America",40,81);
-  ("Eastern United States",55,67);
+  ("Eastern United States",55,69);
   ("Greenland",85,22);
-  ("Northwest Territory",41,29);
+  ("Northwest Territory",46,28);
   ("Ontario",52,46);
   ("Quebec",70,49);
   ("Western United States",37,59);
@@ -22,7 +22,7 @@ let country_coor = [
   ("Brazil",77,112);
   ("Peru",56,114);
   ("Venezuela",59,97);
-  ("Great Britain",104,57);
+  ("Great Britain",104,53);
   ("Iceland",105,39);
   ("Northern Europe",127,61);
   ("Scandinavia",129,34);
@@ -31,7 +31,7 @@ let country_coor = [
   ("Western Europe",104,82);
   ("Congo",135,129);
   ("East Africa",151,120);
-  ("Egypt",135,100);
+  ("Egypt",135,98);
   ("Madagascar",159,152);
   ("North Africa",117,110);
   ("South Africa",138,146);
@@ -40,14 +40,14 @@ let country_coor = [
   ("India",180,90);
   ("Irkutsk",198,48);
   ("Japan",226,63);
-  ("Kamchatka",219,29);
+  ("Kamchatka",221,29);
   ("Middle East",154,87);
   ("Mongolia",201,63);
   ("Siam",201,97);
-  ("Siberia",180,24);
+  ("Siberia",180,27);
   ("Ural",169,43);
-  ("Yakutsk",201,26);
-  ("Eastern Australia",233,138);
+  ("Yakutsk",201,23);
+  ("Eastern Australia",227,138);
   ("Indonesia",205,122);
   ("New Guinea",229,117);
   ("Western Australia",219,149)]
@@ -157,11 +157,11 @@ let draw_title () =
   let empty = ' ' in
   let cmap = [('#',black); (':',red); ('.',rgb 255 165 0)] in
   let img = ascii_to_color ascii empty cmap in
-  plot_image img 45 530 10
+  plot_image img 60 398 7
 
 let clear_screen () =
   set_color (rgb 128 128 128);
-  fill_rect 0 0 1000 720
+  fill_rect 0 0 750 540
 
 let create_ccmap gs special =
   let cs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnop" in
@@ -180,9 +180,9 @@ let draw_map_info gs =
     match lst with
     | [] -> ()
     | (n,x,y)::t ->
-        draw_text n (x*4) (720-(y*4)+9) 1 white Center;
+        draw_text n (x*3) (540-(y*3)+9) 1 white Center;
         let army = string_of_int (get_armies gs n) in
-        draw_text army (x*4) (720-(y*4)-3) 1 white Center;
+        draw_text army (x*3) (540-(y*3)-3) 1 white Center;
         drawer t
   in drawer country_coor
 
@@ -202,8 +202,8 @@ let rec draw_dices lst x y =
   match lst with
   | [] -> ()
   | h::t ->
-      let () = plot_image (lookup h !dices) x y 14 in
-      draw_dices t x (y-140)
+      let () = plot_image (lookup h !dices) x y 10 in
+      draw_dices t x (y-100)
 
 (******************************************************************************)
 (******************************************************************************)
@@ -211,17 +211,17 @@ let rec draw_dices lst x y =
 (** takes a message and displays it to the player e.g. "Please choose ..." *)
 let draw_message s =
   set_color (rgb 128 128 128);
-  fill_rect 0 684 1000 36;
-  draw_text s 8 712 2 black Left
+  fill_rect 0 540 750 24;
+  draw_text s 8 534 2 black Left
 
 (** takes a description and input string and displays it on the screen
  * e.g. draw_input_string "Enter name:" "Alice" will display
  * "Enter name: Alice" on the screen. *)
 let draw_input_string s input =
   set_color (rgb 128 128 128);
-  fill_rect 0 0 1000 40;
-  draw_text s 12 36 3 black Left;
-  draw_text input (12+(String.length s)*24) 36 3 blue Left
+  fill_rect 0 0 750 20;
+  draw_text s 6 18 2 black Left;
+  draw_text input (6+(String.length s)*16) 18 2 blue Left
 
 (** takes a description and input int and displays it on the screen as in
  * draw_input_string *)
@@ -230,11 +230,11 @@ let draw_input_int s input =
 
 (** displays the title screen screen of the game *)
 let draw_start () =
-  open_graph " 1000x720+50-100";
+  open_graph " 750x540+50+100";
   alphabet := (create_alphabet ());
   create_dice ();
   clear_screen ();
-  draw_text "CS3110 FA15" 500 160 4 black Center;
+  draw_text "CS3110 FA15" 375 120 3 black Center;
   draw_title ()
 
 (** displays the win/lose screen screen of the game
@@ -242,7 +242,7 @@ let draw_start () =
 let draw_end id =
   clear_screen ();
   let name = get_name !cur_gs id in
-  draw_text (name^" is the winner.") 500 160 4 black Center;
+  draw_text (name^" is the winner.") 375 120 3 black Center;
   draw_title ();
   draw_message "Thanks for playing.";
   draw_input_string "Press ESC to exit." ""
@@ -250,6 +250,7 @@ let draw_end id =
 (** displays the world map with countries colored based on player, number of
  * armies on each country, and current player *)
 let draw_map gs =
+  cur_gs := gs;
   if(!player_colors = [])
     then player_colors := create_player_colors (get_player_id_list gs) else ();
   clear_screen ();
@@ -257,7 +258,7 @@ let draw_map gs =
   let empty = '.' in
   let cmap = ('#',black)::(create_ccmap gs "") in
   let img = ascii_to_color ascii empty cmap in
-  plot_image img 0 720 4;
+  plot_image img 0 540 3;
   draw_map_info gs
 
 (** takes the game state, attacking territory, defending territory, and 2 lists
@@ -271,10 +272,10 @@ let draw_battle gs attack defend arolls drolls =
   let dname = get_name gs (get_territory_owner gs defend) in
   let acol = terr_color gs attack in
   let dcol = terr_color gs defend in
-  let () = draw_text aname 250 600 5 acol Center in
-  let () = draw_text dname 750 600 5 dcol Center in
-  let () = draw_dices arolls 194 500 in
-  let () = draw_dices drolls 694 500 in
+  let () = draw_text aname 200 420 5 acol Center in
+  let () = draw_text dname 550 420 5 dcol Center in
+  let () = draw_dices arolls 155 360 in
+  let () = draw_dices drolls 505 360 in
   let () = draw_input_string "Press enter to continue." "" in
   wait_for_enter ()
 
@@ -289,7 +290,7 @@ let draw_highlight gs terr =
   let empty = '.' in
   let cmap = ('#',black)::(create_ccmap gs terr) in
   let img = ascii_to_color ascii empty cmap in
-  plot_image img 0 720 4;
+  plot_image img 0 540 3;
   draw_map_info gs
 
 

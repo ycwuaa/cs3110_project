@@ -277,18 +277,18 @@ let set_next_player (gs:t) : t =
   in {gs with active_player = (find gs.player_info)} *)
   let current = gs.active_player in
   (*returns the index of active player in player_info*)
-  let rec find lst n =
+  let rec find lst =
     if current = no_one then 0 else
     match lst with
     | [] -> failwith "No players in game"
     | (id, (_, _))::tl -> (
       if id = current then
-        if n >= (List.length gs.player_info) then 0 else n+1
-      else find tl (n+1))
+        match tl with
+        | [] -> let (nid, (_,_)) = List.hd (gs.player_info) in nid
+        | (nid, (_,_))::_ -> nid
+      else find tl)
   in
-  let index = find gs.player_info 0 in
-  let (id, (h, n)) = List.nth gs.player_info index in
-  {gs with active_player = id}
+  {gs with active_player = (find gs.player_info)}
 
 (** set the active to the given player_id*)
 let set_active_player (state: t) (pid: player_id): t =
