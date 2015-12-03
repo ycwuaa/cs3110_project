@@ -45,6 +45,7 @@ let init_game state =
       get_army_distribute (id-1) after_state
     | _ -> cur_state
   in
+  (*TODO: Actually distribute territories *)
   let distribute_army_state =
     get_army_distribute (human+computer-1) add_all_player in
   Init.set_first_player distribute_army_state
