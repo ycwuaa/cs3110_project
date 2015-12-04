@@ -9,7 +9,7 @@ let init_game state =
   let (human, computer) = Input.choose_start () in
   let rec get_name_id id bound cur_state is_human =
     match id with
-    | id when id<bound -> cur_state
+    | id when id<=bound -> cur_state
     | _ -> let new_player = create_player id in
            let new_name = if is_human then Input.choose_name ()
                           else AI.choose_name ()
@@ -19,6 +19,7 @@ let init_game state =
   in
   let add_human_state = get_name_id (human+computer-1) (computer-1) state true in
   let add_all_player = get_name_id (computer-1) 0 add_human_state false in
+  let set_active = Init.set_first_player add_all_player in
   let army_each =
     match (human+computer) with
     | 3 -> 35
@@ -45,10 +46,15 @@ let init_game state =
       get_army_distribute (id-1) after_state
     | _ -> cur_state
   in
+<<<<<<< HEAD
   (*TODO: Actually distribute territories *)
   let distribute_army_state =
     get_army_distribute (human+computer-1) add_all_player in
   Init.set_first_player distribute_army_state
+=======
+  let distribute_terri = Init.distribute_territory set_active in
+  get_army_distribute (human+computer-1) distribute_terri
+>>>>>>> 498a3af55af7f8a595843fbd6fbad4e3b8f9cf15
 
 (** returns a gameState option with either an updated state, or None if a player
   * has won; removes any losing players (in rounds when game is not won) *)
