@@ -264,7 +264,8 @@ let draw_map gs =
   let (_,c) = List.find (fun (n,_) -> (n = id)) !player_colors in
   set_color (c));
   fill_rect 311 480 168 24;
-  draw_text "Your color" 395 498 2 black Center
+  (let name = get_name gs (get_active_player gs) in
+  draw_text name 395 498 2 black Center)
 
 (** takes the game state, attacking territory, defending territory, and 2 lists
  * of dice rolls and then displays the data on the the screen to the player *)

@@ -7,13 +7,14 @@ open Random
 
 
 (** returns a pseudo-random int between 1 and 6 (inclusive)*)
-let roll_dice () : int =
+let roll_dice : unit -> int =
   (* seed random *)
-  let _ = init 100 in
-  (*get number between 0 and 5 (inclusive)*)
-  let result = int 6 in
-  (*add 1 to result and return*)
-  result + 1
+  let _ = self_init () in
+  fun () ->
+    (*get number between 0 and 5 (inclusive)*)
+    let result = int 6 in
+    (*add 1 to result and return*)
+    result + 1
 
 (** takes in two sorted lists representing the outcomes of attckers and defender
   * die rolls; returns a pair of ints represnting the number or successes for

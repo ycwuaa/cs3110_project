@@ -6,7 +6,8 @@ open GameState
  * higher rank = more preferable *)
 type rank = float
 let army_size_multiplier = 0.9 (*prioritize difference in army size*)
-let near_ownership_multiplier = 1.5 (*prioritize my almost-owned continents*)
+let near_ownership_multiplier = 2.0 (*prioritize my almost-owned continents*)
+let non_boundary_penalty = -5.0 (*avoid non-boundaries of owned region*)
 
 (*
 
@@ -15,6 +16,9 @@ let my_ownership_multiplier = 2.0 (*prioritize defending own continents*)
 
 *)
 
+
+
+(** HELPER FUNCTIONS **)
 
 (* helper debug function to print out a territory list *)
 let print_list tostring lst =
@@ -26,15 +30,24 @@ let print_list tostring lst =
   in
   helper 1 lst
 
+(* cmp function for sorting a pair, as specified by List.sort and Array.sort
+ * reverse the call to compare so that the sort is in decreasing order *)
+let cmp_ranks_2 (rnk1, _) (rnk2, _) = compare rnk2 rnk1
+(* cmp function for sorting a triple, as specified by List.sort and Array.sort
+ * reverse the call to compare so that the sort is in decreasing order *)
+let cmp_ranks_3 (rnk1, _, _) (rnk2, _, _) = compare rnk2 rnk1
 
-(** EXPOSED FUNCTIONS **)
-
-let choose_name =
-  let curr_int = ref 1 in
-  fun () ->
-    let returnVal = "CPU " ^ (string_of_int !curr_int) in
-    let _ = incr curr_int in
-    returnVal
+(* return a list of all (friendly territory, target enemy territory) possible *)
+let rec get_attack_options gs usable_terr acc =
+  let p' = get_active_player gs in
+  match usable_terr with
+  | [] -> acc
+  | h::t ->
+    let neighbors = get_adjacency gs h in
+    let enemy_neighbors =
+      List.filter (fun terr -> (get_territory_owner gs terr) <> p') neighbors in
+    get_attack_options gs t
+      (List.map (fun terr -> (h, terr)) enemy_neighbors @ acc)
 
 (* return a list of (continent, percentage of territories on that continent that
  * the active player owns) *)
@@ -55,12 +68,64 @@ let get_my_continents (gs:t) : (continent * float) list =
     )
   ) (get_all_continents gs)
 
+(* returns 1.0 if this territory cannot attack an enemy territory;
+ * 0.0 if it can
+ * precondition: [terr] is the owned by the active player *)
+let is_nonboundary_float (gs:t) (terr:territory) : rank =
+  let p' = get_active_player gs in
+  let neighbors = get_adjacency gs terr in
+  let enemy_neighbors =
+    List.filter (fun terr -> (get_territory_owner gs terr) <> p') neighbors in
+  if enemy_neighbors = [] then
+    1.0
+  else
+    0.0
+
+(* rate the attacking options from [from] to [target]; return a
+ * (rank, from, target) tuple *)
+let rank_attack_option gs (from, target) : rank * territory * territory =
+  (* target territories that are easier to take over *)
+  let army_diff = float_of_int (get_armies gs from - get_armies gs target) in
+  (* prioritize taking over continents that I already own most of *)
+  let near_ownership_bonus =
+    List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
+
+  (
+      army_diff       *. army_size_multiplier
+   +. near_ownership_bonus *. near_ownership_multiplier
+   , from, target
+  )
+
+(* rate the value of a given territory [terr] ; return a (rank, terr) tuple
+ * currently just prioritize highest difference in army size *)
+let rank_place_option gs terr : rank * territory =
+  (* prioritize taking defending continents that I already own most of *)
+  let near_ownership_bonus =
+    List.assoc (get_continent_of_terr gs terr) (get_my_continents gs) in
+  let is_nonboundary = is_nonboundary_float gs terr in
+
+  (
+      near_ownership_bonus *. near_ownership_multiplier
+   +. is_nonboundary *. non_boundary_penalty
+   , terr
+  )
+
+
+
+(** EXPOSED FUNCTIONS **)
+
+let choose_name =
+  let curr_int = ref 1 in
+  fun () ->
+    let returnVal = "CPU " ^ (string_of_int !curr_int) in
+    let _ = incr curr_int in
+    returnVal
+
 (* current strategy: place equally everywhere *)
 let place_original_armies (gs:t) (num_new:int) =
   let p' = get_active_player gs in
   let my_terr = get_territories gs p' in
   let num_terr = List.length my_terr in
-
 
   (* divide up the int [dividend] into a list of length [divisor] whose sum is
    * [dividend] and whose values are roughly equal
@@ -92,38 +157,15 @@ let place_original_armies (gs:t) (num_new:int) =
 let place_new_armies (gs:t) (num_new:int) =
   let p' = get_active_player gs in
   let my_terr = get_territories gs p' in
-  (num_new, List.hd my_terr)
 
-(* return a list of all (friendly territory, target enemy territory) possible *)
-let rec get_attack_options gs usable_terr acc =
-  let p' = get_active_player gs in
-  match usable_terr with
-  | [] -> acc
-  | h::t ->
-    let neighbors = get_adjacency gs h in
-    let enemy_neighbors =
-      List.filter (fun terr -> (get_territory_owner gs terr) <> p') neighbors in
-    get_attack_options gs t
-      (List.map (fun terr -> (h, terr)) enemy_neighbors @ acc)
+  let all_ranks = List.map (rank_place_option gs) my_terr in
+  let sorted_ranks = List.sort cmp_ranks_2 all_ranks in
+  let _ = print_list (fun (rnk, t1) -> Printf.sprintf "%7f: %12s" rnk t1) sorted_ranks in
 
-(* rate the attacking options from a given; return a (rank, from, target) tuple
- * currently just prioritize highest difference in army size *)
-let rank_attack_option gs (from, target) : rank * territory * territory =
-  (* target territories that are easier to take over *)
-  let army_diff = float_of_int (get_armies gs from - get_armies gs target) in
-  (* prioritize taking over continents that I already own most of *)
-  let near_ownership_bonus = List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
+  match List.hd sorted_ranks with
+  | (rnk, terr) ->
+    (num_new, terr) (* TODO: put in more places *)
 
-  (
-      army_diff       *. army_size_multiplier
-   +. near_ownership_bonus *. near_ownership_multiplier
-
-   , from, target
-  )
-
-(* cmp function for sorting, as specified by List.sort and Array.sort
- * reverse the call to compare so that the sort is in decreasing order *)
-let cmp_ranks (rnk1, _, _) (rnk2, _, _) = compare rnk2 rnk1
 
 (* current strategy: keep attacking from the first territory found with
  * armies > 1 to the first enemy territory found that neighbors it, or
@@ -136,14 +178,14 @@ let choose_attack (gs:t) =
 
   let all_options = get_attack_options gs usable_terr [] in
   let all_ranks = List.map (rank_attack_option gs) all_options in
-  let sorted_ranks = List.sort cmp_ranks all_ranks in
+  let sorted_ranks = List.sort cmp_ranks_3 all_ranks in
   let _ = print_list (fun (rnk, t1, t2) -> Printf.sprintf "%7f: %12s to %12s" rnk t1 t2) sorted_ranks in
 
   if sorted_ranks = [] then
     None
   else
     match List.hd sorted_ranks with
-    | (rnk, from, target) when rnk < 1.0 -> None
+    | (rnk, _, _) when rnk < 1.0 -> None
     | (rnk, from, target) ->
       let num_armies = (get_armies gs from) - 1 in
       Some (from, target, min num_armies 3) (* TODO: put the constant 3 in another module as a contant? *)

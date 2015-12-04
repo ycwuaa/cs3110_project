@@ -113,7 +113,7 @@ let init_world_map () =
 let rec get_int txt min max =
   let valid = "1234567890" in
   let rec loop c s =
-    if(c = '\r') then
+    if(c = '\r' && s <> "") then
       let i =
         let slen = if(String.length s > 8) then 8 else String.length s in
       int_of_string (String.sub s 0 slen) in
@@ -279,8 +279,8 @@ let rec choose_attack gs =
                 else
                 let max_dice = (match (narmy=2,narmy>=4) with
                   | (true,false) -> 1
-                  | (false,true) -> 2
-                  | (false,false) -> 3
+                  | (false,false) -> 2
+                  | (false,true) -> 3
                   | (true,true) -> failwith "Invalid dice configuration.")
                 in
                 let () = draw_message ("Attacking from "^afrom^" to "^ato) in
