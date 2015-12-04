@@ -11,8 +11,8 @@ let init_game state =
     match id with
     | id when id<=bound -> cur_state
     | _ -> let new_player = create_player id in
-           let new_name = if is_human then (Printf.printf "add human";Input.choose_name ())
-                          else (Printf.printf "add AI";AI.choose_name ())
+           let new_name = if is_human then Input.choose_name ()
+                          else AI.choose_name ()
            in
            let new_state = add_player cur_state new_player new_name is_human in
            get_name_id (id-1) bound new_state is_human
@@ -46,7 +46,8 @@ let init_game state =
       get_army_distribute (id-1) after_state
     | _ -> cur_state
   in
-  get_army_distribute (human+computer-1) set_active
+  let distribute_terri = Init.distribute_territory set_active in
+  get_army_distribute (human+computer-1) distribute_terri
 
 (** returns a gameState option with either an updated state, or None if a player
   * has won; removes any losing players (in rounds when game is not won) *)
