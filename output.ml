@@ -245,7 +245,8 @@ let draw_end id =
   draw_text (name^" is the winner.") 375 120 3 black Center;
   draw_title ();
   draw_message "Thanks for playing.";
-  draw_input_string "Press ESC to exit." ""
+  draw_input_string "Press ESC to exit." "";
+  wait_for_exit ()
 
 (** displays the world map with countries colored based on player, number of
  * armies on each country, and current player *)
@@ -269,7 +270,7 @@ let draw_map gs =
 
 (** takes the game state, attacking territory, defending territory, and 2 lists
  * of dice rolls and then displays the data on the the screen to the player *)
-let draw_battle gs attack defend arolls drolls =
+let draw_battle gs attack defend arolls drolls (al, dl)=
   if(!player_colors = [])
     then player_colors := create_player_colors (get_player_id_list gs) else ();
   let () = clear_screen () in
@@ -278,8 +279,11 @@ let draw_battle gs attack defend arolls drolls =
   let dname = get_name gs (get_territory_owner gs defend) in
   let acol = terr_color gs attack in
   let dcol = terr_color gs defend in
-  let () = draw_text aname 200 420 5 acol Center in
-  let () = draw_text dname 550 420 5 dcol Center in
+  let () = draw_text aname 200 460 5 acol Center in
+  let () = draw_text dname 550 460 5 dcol Center in
+  let lose n = ("Loses "^(string_of_int n)^" armies.") in
+  let () = draw_text (lose al) 200 420 3 acol Center in
+  let () = draw_text (lose dl) 550 420 3 dcol Center in
   let () = draw_dices arolls 155 360 in
   let () = draw_dices drolls 505 360 in
   let () = draw_input_string "Press enter to continue." "" in
