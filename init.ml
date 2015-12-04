@@ -24,7 +24,9 @@ let distribute_territory (gs:t) =
 let place_army (state:t) assigned_l =
   let rec helper cur_state = function
     | [] -> cur_state
-    | (num, terri)::t -> let new_state = (set_num_armies cur_state terri num) in
+    | (num, terri)::t -> let ori = get_armies cur_state terri in
+                         let new_state =
+                           (set_num_armies cur_state terri (num+ori)) in
                          helper new_state t
   in
   helper state assigned_l
