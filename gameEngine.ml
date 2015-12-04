@@ -18,7 +18,7 @@ let init_game state =
            get_name_id (id-1) bound new_state is_human
   in
   let add_human_state = get_name_id (human+computer-1) (computer-1) state true in
-  let add_all_player = get_name_id (computer-1) 0 add_human_state false in
+  let add_all_player = get_name_id (computer-1) (-1) add_human_state false in
   let set_active = Init.set_first_player add_all_player in
   let army_each =
     match (human+computer) with
