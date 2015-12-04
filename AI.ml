@@ -216,7 +216,7 @@ let choose_attack (gs:t) =
 (* current strategy: move everyone possible *)
 let choose_move_conquerors (gs:t) (from:territory) (target:territory)
   (minMove:int) =
-  min (minMove) (get_armies gs from - 1)
+  get_armies gs from - 1
 
 (* current strategy: do nothing *)
 let redistribute_armies  (gs:t) =
