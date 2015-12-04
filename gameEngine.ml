@@ -149,12 +149,13 @@ let rec do_attack gs =
       let defender_rolls = rolls num_dice_def in
       let (outcome_a, outcome_d) =
         Attack.attack_outcome attacker_rolls defender_rolls in
-
+      let _ =
+        Output.draw_battle gs from toward
+        attacker_rolls defender_rolls (outcome_a, outcome_d) in
       (* remove a piece from [from] for each defender victory *)
       let gs = Attack.remove_pieces gs outcome_d from in
       (* remove a piece from [toward] for each attacker victory *)
       let gs = Attack.remove_pieces gs outcome_a toward in
-
       if (Attack.is_captured gs toward) then
         let invade_with = AI.choose_move_conquerors gs from toward num_dice in
         let gs = Attack.invade gs invade_with from toward in

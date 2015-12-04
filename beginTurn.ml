@@ -14,7 +14,7 @@ let award_pieces  (state: t)  (pid: player_id): int =
   let num_held = List.length territories in
   let to_award = num_held / 3 in
 
-  if to_award = 0 then 1 else to_award
+  if to_award < 3 then 3 else to_award
 
   (*TODO: check if any continents are held and award points accordingly*)
 
