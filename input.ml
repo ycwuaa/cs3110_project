@@ -279,8 +279,8 @@ let rec choose_attack gs =
                 else
                 let max_dice = (match (narmy=2,narmy>=4) with
                   | (true,false) -> 1
-                  | (false,true) -> 2
-                  | (false,false) -> 3
+                  | (false,false) -> 2
+                  | (false,true) -> 3
                   | (true,true) -> failwith "Invalid dice configuration.")
                 in
                 let () = draw_message ("Attacking from "^afrom^" to "^ato) in
