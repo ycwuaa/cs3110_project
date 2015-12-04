@@ -159,7 +159,7 @@ let choose_territory gs b =
   let () = draw_input_string "Select a territory." "" in
     let rec terr_loop () =
       let (x,y) = mouse_press () in
-      let oterr = (!world_map).((720-y)/4).(x/4) in
+      let oterr = (!world_map).((540-y)/3).(x/3) in
       match oterr with
       | None -> None
       | Some x ->

@@ -259,7 +259,12 @@ let draw_map gs =
   let cmap = ('#',black)::(create_ccmap gs "") in
   let img = ascii_to_color ascii empty cmap in
   plot_image img 0 540 3;
-  draw_map_info gs
+  draw_map_info gs;
+  (let id = get_active_player gs in
+  let (_,c) = List.find (fun (n,_) -> (n = id)) !player_colors in
+  set_color (c));
+  fill_rect 311 480 168 24;
+  draw_text "Your color" 395 498 2 black Center
 
 (** takes the game state, attacking territory, defending territory, and 2 lists
  * of dice rolls and then displays the data on the the screen to the player *)
