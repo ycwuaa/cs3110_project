@@ -11,6 +11,7 @@ let _ = wait_for_key ()
 
 open GameState
 open Output
+open Input
 open Init
 
 
@@ -34,6 +35,10 @@ in
 let _ = gs in
 draw_start();
 draw_map gs;
+draw_input_string "Hello there." "skdhfsd";
+draw_input_string "Bye." "shdfghjsd";
+ignore(choose_start ());
+ignore(place_original_armies gs 15);
 wait_for_exit ();
 
 
