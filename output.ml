@@ -245,7 +245,8 @@ let draw_end id =
   draw_text (name^" is the winner.") 375 120 3 black Center;
   draw_title ();
   draw_message "Thanks for playing.";
-  draw_input_string "Press ESC to exit." ""
+  draw_input_string "Press ESC to exit." "";
+  wait_for_exit ()
 
 (** displays the world map with countries colored based on player, number of
  * armies on each country, and current player *)
