@@ -54,8 +54,11 @@ let init_game state =
 (** returns a gameState option with either an updated state, or None if a player
   * has won; removes any losing players (in rounds when game is not won) *)
 let end_turn state =
-  let move_army = Input.redistribute_armies state in
   let player = get_active_player state in
+  let move_army =
+    if (get_is_human state player) then Input.redistribute_armies state
+    else AI.redistribute_armies state
+  in
   let after_move =
     match move_army with
     | None -> state
