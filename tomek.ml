@@ -34,6 +34,8 @@ in
 let _ = gs in
 draw_start();
 draw_map gs;
+draw_input_string "Hello there." "skdhfsd";
+draw_input_string "Bye." "shdfghjsd";
 wait_for_exit ();
 
 

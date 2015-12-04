@@ -211,7 +211,7 @@ let rec draw_dices lst x y =
 (** takes a message and displays it to the player e.g. "Please choose ..." *)
 let draw_message s =
   set_color (rgb 128 128 128);
-  fill_rect 0 540 750 24;
+  fill_rect 0 518 750 22;
   draw_text s 8 534 2 black Left
 
 (** takes a description and input string and displays it on the screen
