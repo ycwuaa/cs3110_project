@@ -30,7 +30,7 @@ let init_game state =
   in
   let rec get_army_distribute id cur_state =
     match id with
-    | id when id > computer ->
+    | id when id >= computer ->
       let player = create_player id in
       let army_ed = List.length (get_territories cur_state player) in
       let list_army =
