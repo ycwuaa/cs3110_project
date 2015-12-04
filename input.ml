@@ -220,8 +220,9 @@ let place_original_armies gs num =
   let rec loop n lst lgs =
     if(n = 0) then lst else
     let () = draw_map lgs in
-    let () = draw_message ("Total armies remaining: "^(string_of_int n)) in
-    let terro = choose_territory gs true in
+    let () = draw_message ("Remaining initial armies: "^(string_of_int n))
+    in
+    let terro = choose_territory lgs true in
     match terro with
     | None -> loop n lst lgs
     | Some terr ->
