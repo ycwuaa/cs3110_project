@@ -113,7 +113,7 @@ let init_world_map () =
 let rec get_int txt min max =
   let valid = "1234567890" in
   let rec loop c s =
-    if(c = '\r') then
+    if(c = '\r' && s <> "") then
       let i =
         let slen = if(String.length s > 8) then 8 else String.length s in
       int_of_string (String.sub s 0 slen) in
@@ -220,8 +220,9 @@ let place_original_armies gs num =
   let rec loop n lst lgs =
     if(n = 0) then lst else
     let () = draw_map lgs in
-    let () = draw_message ("Total armies remaining: "^(string_of_int n)) in
-    let terro = choose_territory gs true in
+    let () = draw_message ("Remaining initial armies: "^(string_of_int n))
+    in
+    let terro = choose_territory lgs true in
     match terro with
     | None -> loop n lst lgs
     | Some terr ->
@@ -258,6 +259,8 @@ let rec choose_attack gs =
   | No -> None
   | Yes ->
       let rec loop () =
+        let () = draw_map gs in
+        let () = draw_message "Choose your attacking country." in
         let afromo = choose_territory gs true in
         match afromo with
         | None -> choose_attack gs

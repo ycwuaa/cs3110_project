@@ -15,8 +15,10 @@ val draw_end: player_id -> unit
 val draw_map: t -> unit
 
 (** takes the game state, attacking territory, defending territory, and 2 lists
- * of dice rolls and then displays the data on the the screen to the player *)
-val draw_battle: t -> territory -> territory -> int list -> int list -> unit
+ * of dice rolls and number of pieces lost, and then displays the data on the
+ * the screen to the player *)
+val draw_battle: t -> territory -> territory -> int list -> int list -> int*int
+  -> unit
 
 (** takes a gamestate and a territory and displays the same map as in
  * redraw_map except with the territory highlighted. *)
