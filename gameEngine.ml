@@ -46,15 +46,11 @@ let init_game state =
       get_army_distribute (id-1) after_state
     | _ -> cur_state
   in
-<<<<<<< HEAD
   (*TODO: Actually distribute territories *)
   let distribute_army_state =
     get_army_distribute (human+computer-1) add_all_player in
   Init.set_first_player distribute_army_state
-=======
-  let distribute_terri = Init.distribute_territory set_active in
-  get_army_distribute (human+computer-1) distribute_terri
->>>>>>> 498a3af55af7f8a595843fbd6fbad4e3b8f9cf15
+
 
 (** returns a gameState option with either an updated state, or None if a player
   * has won; removes any losing players (in rounds when game is not won) *)
