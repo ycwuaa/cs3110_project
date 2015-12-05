@@ -9,10 +9,10 @@ let army_size_multiplier = 0.9 (*prioritize difference in army size*)
 let near_ownership_multiplier = 2.0 (*prioritize my almost-owned continents*)
 let non_boundary_penalty = -5.0 (*avoid non-boundaries of owned region*)
 let internal_conquest_multiplier = 2.5 (*prioritize boundaries of owned region*)
+let enemy_ownership_multiplier = 2.0 (*prioritize disrupting enemy continents*)
 
 (*
 
-let enemy_ownership_multiplier = 2.0 (*prioritize disrupting enemy continents*)
 let my_ownership_multiplier = 2.0 (*prioritize defending own continents*)
 
 *)
@@ -71,9 +71,17 @@ let get_my_continents (gs:t) : (continent * float) list =
     )
   ) (get_all_continents gs)
 
+(* returns true if this territory is in an enemy continent; false otherwise
+ * precondition: [terr] is NOT owned by the active player *)
+let is_enemy_continent (gs:t) (terr:territory) : bool =
+  let cont = get_continent_of_terr gs terr in
+  (* check if the no-one condition on get_continents is true
+   * that is, check if NOT no one owns the whole continent *)
+  not ( List.mem cont (get_continents gs no_one) )
+
 (* returns true if this territory cannot attack an enemy territory;
  * false otherwise
- * precondition: [terr] is the owned by the active player *)
+ * precondition: [terr] is owned by the active player *)
 let is_nonboundary (gs:t) (terr:territory) : bool =
   let p' = get_active_player gs in
   let neighbors = get_adjacency gs terr in
@@ -103,6 +111,7 @@ let internal_conquest (gs:t) (terr:territory) : bool =
       neighbors in
   internal_enemy_neighbors <> []
 
+
 (* rate the attacking options from [from] to [target]; return a
  * (rank, from, target) tuple *)
 let rank_attack_option gs (from, target) : rank * territory * territory =
@@ -111,10 +120,13 @@ let rank_attack_option gs (from, target) : rank * territory * territory =
   (* prioritize taking over continents that I already own most of *)
   let near_ownership_bonus =
     List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
+  (* prioritize disrupting enemy continents *)
+  let enemy_continent_bonus = rank_of_bool (is_enemy_continent gs target) in
 
   (
       army_diff       *. army_size_multiplier
    +. near_ownership_bonus *. near_ownership_multiplier
+   +. enemy_continent_bonus *. enemy_ownership_multiplier
    , from, target
   )
 
@@ -211,7 +223,7 @@ let choose_attack (gs:t) =
     | (rnk, _, _) when rnk < 1.0 -> None
     | (rnk, from, target) ->
       let num_armies = (get_armies gs from) - 1 in
-      Some (from, target, min num_armies 3) (* TODO: put the constant 3 in another module as a contant? *)
+      Some (from, target, min num_armies 3)
 
 (* current strategy: move everyone possible *)
 let choose_move_conquerors (gs:t) (from:territory) (target:territory)
