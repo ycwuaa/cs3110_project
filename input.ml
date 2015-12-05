@@ -159,6 +159,9 @@ let choose_territory gs b =
   let () = draw_input_string "Select a territory." "" in
     let rec terr_loop () =
       let (x,y) = mouse_press () in
+      if(not(x<=750 && x>=0 && y<=540 && y>=0)) then
+        terr_loop()
+      else
       let oterr = (!world_map).((540-y)/3).(x/3) in
       match oterr with
       | None -> None
@@ -259,6 +262,8 @@ let rec choose_attack gs =
   | No -> None
   | Yes ->
       let rec loop () =
+        let () = draw_map gs in
+        let () = draw_message "Choose your attacking country." in
         let afromo = choose_territory gs true in
         match afromo with
         | None -> choose_attack gs
