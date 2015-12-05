@@ -218,9 +218,22 @@ let choose_move_conquerors (gs:t) (from:territory) (target:territory)
   (minMove:int) =
   get_armies gs from - 1
 
-(* current strategy: do nothing *)
+(* current strategy: find any armies not on the boundary and place them elsewhere *)
 let redistribute_armies  (gs:t) =
-  None
+  let p' = get_active_player gs in
+  let my_terr = get_territories gs p' in
+  let nonboundary =
+    List.filter
+    (fun terr -> is_nonboundary gs terr && get_armies gs terr > 1)
+    my_terr
+    in
+  if nonboundary = [] then
+    None
+  else
+    let from = List.hd nonboundary in
+    let number = get_armies gs from - 1 in
+    let (_, target) = place_new_armies gs number in
+    Some (from, target, number)
 
 (* current strategy: always defend with the most dice possible *)
 let choose_dice (gs:t) (from:territory) (target:territory) (num_enemy:int)
