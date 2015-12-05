@@ -318,7 +318,6 @@ let choose_move_conquerors gs tfrom tto min =
   let () = draw_map gs in
   let () = draw_message ("Moving armies from "^tfrom^"@ to "^tto^".") in
   get_int "How many do you move: " min ((get_armies gs tfrom)-1)
-  (*Shouldn't this be maximum*)
 
 (** takes in a GameState and returns Some (from, to, num) if player moves
  * [num] armies from the [from] territory to the [to] territory, or None if
@@ -340,7 +339,7 @@ let rec redistribute_armies gs =
             let () = draw_message (afrom^" has <2 armies.") in
             let () = delay 0.1 in loop ()
           else
-          let () = draw_message ("Attacking from "^afrom) in
+          let () = draw_message ("Redistributing from "^afrom) in
           let () = draw_highlight gs afrom in
           let atoo = choose_territory gs true in
           match atoo with
