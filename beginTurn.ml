@@ -22,7 +22,31 @@ let award_pieces  (state: t)  (pid: player_id): int =
   let cont_aw = continent_award 0 continent_l in
   if to_award < 3 then (3+cont_aw) else (to_award+cont_aw)
 
-  (*TODO: check if any continents are held and award points accordingly*)
+(** returns a new state, checks if [pid] owns any continents in [state] *)
+let continent_ownership (state: t) (pid: player_id): t =
+  (** returns true if all elements of [cont_list] are in [terr_list] *)
+  let rec check_cont_ownership terr_list cont_list =
+    match cont_list with
+    | [] -> true
+    | hd :: tl -> (List.mem hd terr_list) && (check_cont_ownership terr_list tl)
+  in
+
+  (** sets pid as owner of a continents that he owns, returns an updated
+    * gamestate *)
+  let rec check_continents gs t_list c_list =
+    match c_list with
+    | [] -> gs
+    | hd :: tl ->
+      let c_t_list = get_continent_territories gs hd in
+      if check_cont_ownership t_list c_t_list
+        then let new_gs = set_continent_owner gs pid hd in
+        check_continents new_gs t_list tl
+      else check_continents gs t_list tl
+  in
+  let territories = get_territories state pid in
+  let continents = get_all_continents state in
+
+  check_continents state territories continents
 
 
 (** returns a game state with n pieces aligned with player_id placed on given
