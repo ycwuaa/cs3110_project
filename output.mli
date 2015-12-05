@@ -8,7 +8,7 @@ val draw_start: unit -> unit
 
 (** displays the win/lose screen screen of the game
   * *)
-val draw_end: player_id -> unit
+val draw_end: t -> player_id -> unit
 
 (** displays the world map with countries colored based on player, number of
  * armies on each country, and current player *)
@@ -35,3 +35,7 @@ val draw_input_string: string -> string -> unit
 (** takes a description and input int and displays it on the screen as in
  * draw_input_string *)
 val draw_input_int: string -> int -> unit
+
+(** takes in a game state  attacker's id and defender's id and displays the
+ * names on the map for player to see *)
+val draw_attack_info: t -> territory -> territory -> unit

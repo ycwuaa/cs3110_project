@@ -76,7 +76,7 @@ let end_turn state =
 
   match winner with
   | None -> Some after_remove
-  | Some x -> Output.draw_end x; None
+  | Some x -> Output.draw_end after_remove x; None
 
 
 (* ask the active player to place new armies at the beginning of the turn
@@ -213,6 +213,13 @@ let rec turn gs =
 
   (* end turn *)
   let end_gs = end_turn gs in
+
+  (* wait at the end of a CPU's turn *)
+  let () = if not (get_is_human gs current_player) then
+    Output.draw_map gs;
+    Output.draw_message (Printf.sprintf "End of %s turn" (get_name gs current_player));
+    Input.wait_for_enter ()
+  in
 
   (* exit turn if someone has won, play next turn otherwise *)
   match end_gs with

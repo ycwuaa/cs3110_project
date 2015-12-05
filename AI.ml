@@ -10,28 +10,13 @@ let near_ownership_multiplier = 2.0 (*prioritize my almost-owned continents*)
 let non_boundary_penalty = -5.0 (*avoid non-boundaries of owned region*)
 let internal_conquest_multiplier = 2.5 (*prioritize boundaries of owned region*)
 let enemy_ownership_multiplier = 2.0 (*prioritize disrupting enemy continents*)
-
-(*
-
-let my_ownership_multiplier = 2.0 (*prioritize defending own continents*)
-
-*)
+let my_ownership_multiplier = 2.6 (*prioritize defending own continents*)
 
 
 
 (** HELPER FUNCTIONS **)
 
 let rank_of_bool b = if b then 1.0 else 0.0
-
-(* helper debug function to print out a territory list *)
-let print_list tostring lst =
-  let rec helper num = function
-  | [] -> ()
-  | h::t ->
-    let _ = Printf.printf " %d. %s\n" num (tostring h) in
-    helper (num + 1) t
-  in
-  helper 1 lst
 
 (* cmp function for sorting a pair, as specified by List.sort and Array.sort
  * reverse the call to compare so that the sort is in decreasing order *)
@@ -71,12 +56,13 @@ let get_my_continents (gs:t) : (continent * float) list =
     )
   ) (get_all_continents gs)
 
-(* returns true if this territory is in an enemy continent; false otherwise
- * precondition: [terr] is NOT owned by the active player *)
-let is_enemy_continent (gs:t) (terr:territory) : bool =
+(* returns true if this territory is in a completely owned continent;
+ * false otherwise *)
+let is_owned_continent (gs:t) (terr:territory) : bool =
   let cont = get_continent_of_terr gs terr in
   (* check if the no-one condition on get_continents is true
-   * that is, check if NOT no one owns the whole continent *)
+   * TODO: ask if this'll work with the implementation
+   * check if NOT no one owns the whole continent *)
   not ( List.mem cont (get_continents gs no_one) )
 
 (* returns true if this territory cannot attack an enemy territory;
@@ -112,7 +98,7 @@ let internal_conquest (gs:t) (terr:territory) : bool =
   internal_enemy_neighbors <> []
 
 
-(* rate the attacking options from [from] to [target]; return a
+(* rate the attacking option from [from] to [target]; return a
  * (rank, from, target) tuple *)
 let rank_attack_option gs (from, target) : rank * territory * territory =
   (* target territories that are easier to take over *)
@@ -121,7 +107,7 @@ let rank_attack_option gs (from, target) : rank * territory * territory =
   let near_ownership_bonus =
     List.assoc (get_continent_of_terr gs target) (get_my_continents gs) in
   (* prioritize disrupting enemy continents *)
-  let enemy_continent_bonus = rank_of_bool (is_enemy_continent gs target) in
+  let enemy_continent_bonus = rank_of_bool (is_owned_continent gs target) in
 
   (
       army_diff       *. army_size_multiplier
@@ -130,18 +116,19 @@ let rank_attack_option gs (from, target) : rank * territory * territory =
    , from, target
   )
 
-(* rate the value of a given territory [terr] ; return a (rank, terr) tuple
- * currently just prioritize highest difference in army size *)
+(* rate the value of a given territory [terr] ; return a (rank, terr) tuple *)
 let rank_place_option gs terr : rank * territory =
   let near_ownership_bonus =
     List.assoc (get_continent_of_terr gs terr) (get_my_continents gs) in
-  let nonboundary_boundary = rank_of_bool (is_nonboundary gs terr) in
-  let internal_conquest_multiplier = rank_of_bool (internal_conquest gs terr) in
+  let ownership_bonus = rank_of_bool (is_owned_continent gs terr) in
+  let nonboundary_value = rank_of_bool (is_nonboundary gs terr) in
+  let internal_conquest_bonus = rank_of_bool (internal_conquest gs terr) in
 
   (
       near_ownership_bonus *. near_ownership_multiplier
-   +. nonboundary_boundary *. non_boundary_penalty
-   +. internal_conquest_multiplier *. internal_conquest_multiplier
+   +. ownership_bonus *. my_ownership_multiplier
+   +. nonboundary_value *. non_boundary_penalty
+   +. internal_conquest_bonus *. internal_conquest_multiplier
    , terr
   )
 
@@ -180,12 +167,6 @@ let place_original_armies (gs:t) (num_new:int) =
 
   let number_list = divide_up num_new num_terr [] in
 
-  (* let _ = Printf.printf "%s" (get_name gs p') in *)
-  let () = print_list (string_of_territory gs) my_terr in
-  let () = Printf.printf "\nNumber of territories: %d\n" num_terr in
-  let () = Printf.printf "\nNumber of armies: %d\n" num_new in
-  let () = print_list (string_of_int) number_list in
-
   List.combine number_list my_terr
 
 (* current strategy: place everything on the first territory found *)
@@ -195,7 +176,6 @@ let place_new_armies (gs:t) (num_new:int) =
 
   let all_ranks = List.map (rank_place_option gs) my_terr in
   let sorted_ranks = List.sort cmp_ranks_2 all_ranks in
-  let _ = print_list (fun (rnk, t1) -> Printf.sprintf "%7f: %12s" rnk t1) sorted_ranks in
 
   match List.hd sorted_ranks with
   | (rnk, terr) ->
@@ -214,7 +194,6 @@ let choose_attack (gs:t) =
   let all_options = get_attack_options gs usable_terr [] in
   let all_ranks = List.map (rank_attack_option gs) all_options in
   let sorted_ranks = List.sort cmp_ranks_3 all_ranks in
-  let _ = print_list (fun (rnk, t1, t2) -> Printf.sprintf "%7f: %12s to %12s" rnk t1 t2) sorted_ranks in
 
   if sorted_ranks = [] then
     None

@@ -318,7 +318,6 @@ let choose_move_conquerors gs tfrom tto min =
   let () = draw_map gs in
   let () = draw_message ("Moving armies from "^tfrom^"@ to "^tto^".") in
   get_int "How many do you move: " min ((get_armies gs tfrom)-1)
-  (*Shouldn't this be maximum*)
 
 (** takes in a GameState and returns Some (from, to, num) if player moves
  * [num] armies from the [from] territory to the [to] territory, or None if
@@ -340,7 +339,7 @@ let rec redistribute_armies gs =
             let () = draw_message (afrom^" has <2 armies.") in
             let () = delay 0.1 in loop ()
           else
-          let () = draw_message ("Attacking from "^afrom) in
+          let () = draw_message ("Redistributing from "^afrom) in
           let () = draw_highlight gs afrom in
           let atoo = choose_territory gs true in
           match atoo with
@@ -357,40 +356,13 @@ let rec redistribute_armies gs =
  * the player can defend with and returns the chosen number of dice *)
 let choose_dice gs tfrom tto dice maxn =
   let () = draw_map gs in
+  let () = draw_attack_info gs tfrom tto in
   let () = draw_message (tto^" being attacked @by "^tfrom) in
   let sdice = (string_of_int dice) in
   get_int ("Opp. uses "^sdice^". Choose dice to defend.") 1 maxn
 
-
-(*Debug code
-let () = draw_start ();
-let id0 = (create_player 0) in
-let id1 = (create_player 1) in
-let id2 = (create_player 2) in
-let id3 = (create_player 3) in
-let id4 = (create_player 4) in
-let id5 = (create_player 5) in
-cur_gs := add_player !cur_gs id0 "TomekMarek" true;
-cur_gs := add_player !cur_gs id1 "Max" true;
-cur_gs := add_player !cur_gs id2 "Emily" true;
-cur_gs := add_player !cur_gs id3 "Kim" true;
-cur_gs := add_player !cur_gs id4 "Mark" true;
-cur_gs := add_player !cur_gs id5 "Joseph" true;
-cur_gs := set_territory_owner !cur_gs "Eastern United States" id0;
-cur_gs := set_territory_owner !cur_gs "Japan" id0;
-cur_gs := set_territory_owner !cur_gs "Western United States" id0;
-cur_gs := set_territory_owner !cur_gs "Alberta" id3;
-cur_gs := set_territory_owner !cur_gs "Siberia" id4;
-cur_gs := set_territory_owner !cur_gs "Central America" id0;
-ignore(choose_start ());
-cur_gs := set_active_player !cur_gs id0;
-cur_gs := set_num_armies !cur_gs "Western United States" 10;
-cur_gs := set_num_armies !cur_gs "Japan" 1;
-ignore(draw_battle !cur_gs "Western United States" "Alberta" [5;3;4] [6;2]);
-ignore(choose_attack !cur_gs);
-ignore(choose_move_conquerors !cur_gs "Western United States" "Alberta" 1);
-cur_gs := set_num_armies !cur_gs "Western United States" 1;
-ignore(choose_attack !cur_gs);
-ignore(choose_attack !cur_gs);
-()
-*)
+(** blocks until the user presses enter *)
+let rec wait_for_enter () =
+  let () = draw_input_string "Press enter to continue." "" in
+  let a = read_key () in
+    if a <> '\r' then wait_for_enter () else ()
