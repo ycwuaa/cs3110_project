@@ -363,38 +363,6 @@ let choose_dice gs tfrom tto dice maxn =
 
 (** blocks until the user presses enter *)
 let rec wait_for_enter () =
+  let () = draw_input_string "Press enter to continue." "" in
   let a = read_key () in
     if a <> '\r' then wait_for_enter () else ()
-
-(*Debug code
-let () = draw_start ();
-let id0 = (create_player 0) in
-let id1 = (create_player 1) in
-let id2 = (create_player 2) in
-let id3 = (create_player 3) in
-let id4 = (create_player 4) in
-let id5 = (create_player 5) in
-cur_gs := add_player !cur_gs id0 "TomekMarek" true;
-cur_gs := add_player !cur_gs id1 "Max" true;
-cur_gs := add_player !cur_gs id2 "Emily" true;
-cur_gs := add_player !cur_gs id3 "Kim" true;
-cur_gs := add_player !cur_gs id4 "Mark" true;
-cur_gs := add_player !cur_gs id5 "Joseph" true;
-cur_gs := set_territory_owner !cur_gs "Eastern United States" id0;
-cur_gs := set_territory_owner !cur_gs "Japan" id0;
-cur_gs := set_territory_owner !cur_gs "Western United States" id0;
-cur_gs := set_territory_owner !cur_gs "Alberta" id3;
-cur_gs := set_territory_owner !cur_gs "Siberia" id4;
-cur_gs := set_territory_owner !cur_gs "Central America" id0;
-ignore(choose_start ());
-cur_gs := set_active_player !cur_gs id0;
-cur_gs := set_num_armies !cur_gs "Western United States" 10;
-cur_gs := set_num_armies !cur_gs "Japan" 1;
-ignore(draw_battle !cur_gs "Western United States" "Alberta" [5;3;4] [6;2]);
-ignore(choose_attack !cur_gs);
-ignore(choose_move_conquerors !cur_gs "Western United States" "Alberta" 1);
-cur_gs := set_num_armies !cur_gs "Western United States" 1;
-ignore(choose_attack !cur_gs);
-ignore(choose_attack !cur_gs);
-()
-*)
