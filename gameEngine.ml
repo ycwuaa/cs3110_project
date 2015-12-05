@@ -76,7 +76,7 @@ let end_turn state =
 
   match winner with
   | None -> Some after_remove
-  | Some x -> Output.draw_end x; None
+  | Some x -> Output.draw_end after_remove x; None
 
 
 (* ask the active player to place new armies at the beginning of the turn
