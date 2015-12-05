@@ -289,7 +289,7 @@ let rec choose_attack gs =
                   | (false,true) -> 3
                   | (true,true) -> failwith "Invalid dice configuration.")
                 in
-                let () = draw_message ("Attacking from "^afrom^" to "^ato) in
+                let () = draw_message ("Attacking from "^afrom^"@ to "^ato) in
                 let () = draw_highlight gs ato in
                 let dice = get_int "Enter number of dice: " 1 max_dice in
                 let new_battle = Some (afrom, ato, dice) in
@@ -316,7 +316,7 @@ let rec choose_attack gs =
  * move *)
 let choose_move_conquerors gs tfrom tto min =
   let () = draw_map gs in
-  let () = draw_message ("Moving armies from "^tfrom^" to "^tto^".") in
+  let () = draw_message ("Moving armies from "^tfrom^"@ to "^tto^".") in
   get_int "How many do you move: " min ((get_armies gs tfrom)-1)
   (*Shouldn't this be maximum*)
 
@@ -357,7 +357,7 @@ let rec redistribute_armies gs =
  * the player can defend with and returns the chosen number of dice *)
 let choose_dice gs tfrom tto dice maxn =
   let () = draw_map gs in
-  let () = draw_message (tto^" being attacked by "^tfrom) in
+  let () = draw_message (tto^" being attacked @by "^tfrom) in
   let sdice = (string_of_int dice) in
   get_int ("Opp. uses "^sdice^". Choose dice to defend.") 1 maxn
 

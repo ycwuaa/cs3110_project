@@ -211,8 +211,15 @@ let rec draw_dices lst x y =
 (** takes a message and displays it to the player e.g. "Please choose ..." *)
 let draw_message s =
   set_color (rgb 128 128 128);
-  fill_rect 0 518 750 22;
-  draw_text s 8 534 2 black Left
+  fill_rect 0 518 750 42;
+  if(not (String.contains s '@')) then
+    draw_text s 8 554 2 black Left
+  else
+    let i = String.index s '@' in
+    let s1 = String.sub s 0 i in
+    let s2 = String.sub s (i+1) ((String.length s) - i - 1) in
+    draw_text s1 8 554 2 black Left;
+    draw_text s2 8 534 2 black Left
 
 (** takes a description and input string and displays it on the screen
  * e.g. draw_input_string "Enter name:" "Alice" will display
@@ -230,7 +237,7 @@ let draw_input_int s input =
 
 (** displays the title screen screen of the game *)
 let draw_start () =
-  open_graph " 750x540+50+100";
+  open_graph " 750x560+50+50";
   alphabet := (create_alphabet ());
   create_dice ();
   clear_screen ();
@@ -274,7 +281,7 @@ let draw_battle gs attack defend arolls drolls (al, dl)=
   if(!player_colors = [])
     then player_colors := create_player_colors (get_player_id_list gs) else ();
   let () = clear_screen () in
-  let () = draw_message (attack^" attacked "^defend) in
+  let () = draw_message (attack^" attacked @"^defend) in
   let aname = get_name gs (get_territory_owner gs attack) in
   let dname = get_name gs (get_territory_owner gs defend) in
   let acol = terr_color gs attack in
