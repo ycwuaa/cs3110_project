@@ -201,8 +201,7 @@ let rec do_attack gs =
 let rec turn gs =
   let current_player = get_active_player gs in
   (* start turn *)
-  (* update continent ownership and award pieces *)
-  let gs = BeginTurn.continent_ownership gs current_player in
+  (* award pieces *)
   let num_new_pieces = BeginTurn.award_pieces gs current_player in
   let _ = Printf.printf "Player %s gets %d new pieces\n"
     (get_name gs current_player) num_new_pieces in
