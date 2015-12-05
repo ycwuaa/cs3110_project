@@ -215,6 +215,13 @@ let rec turn gs =
   (* end turn *)
   let end_gs = end_turn gs in
 
+  (* wait at the end of a CPU's turn *)
+  let () = if not (get_is_human gs current_player) then
+    Output.draw_map gs;
+    Output.draw_message (Printf.sprintf "End of %s turn" (get_name gs current_player));
+    Input.wait_for_enter ()
+  in
+
   (* exit turn if someone has won, play next turn otherwise *)
   match end_gs with
   | None -> ()

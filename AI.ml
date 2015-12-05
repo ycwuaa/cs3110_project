@@ -18,16 +18,6 @@ let my_ownership_multiplier = 2.6 (*prioritize defending own continents*)
 
 let rank_of_bool b = if b then 1.0 else 0.0
 
-(* helper debug function to print out a territory list *)
-let print_list tostring lst =
-  let rec helper num = function
-  | [] -> ()
-  | h::t ->
-    let _ = Printf.printf " %d. %s\n" num (tostring h) in
-    helper (num + 1) t
-  in
-  helper 1 lst
-
 (* cmp function for sorting a pair, as specified by List.sort and Array.sort
  * reverse the call to compare so that the sort is in decreasing order *)
 let cmp_ranks_2 (rnk1, _) (rnk2, _) = compare rnk2 rnk1
@@ -186,7 +176,6 @@ let place_new_armies (gs:t) (num_new:int) =
 
   let all_ranks = List.map (rank_place_option gs) my_terr in
   let sorted_ranks = List.sort cmp_ranks_2 all_ranks in
-  let _ = print_list (fun (rnk, t1) -> Printf.sprintf "%7f: %12s" rnk t1) sorted_ranks in
 
   match List.hd sorted_ranks with
   | (rnk, terr) ->
@@ -205,7 +194,6 @@ let choose_attack (gs:t) =
   let all_options = get_attack_options gs usable_terr [] in
   let all_ranks = List.map (rank_attack_option gs) all_options in
   let sorted_ranks = List.sort cmp_ranks_3 all_ranks in
-  let _ = print_list (fun (rnk, t1, t2) -> Printf.sprintf "%7f: %12s to %12s" rnk t1 t2) sorted_ranks in
 
   if sorted_ranks = [] then
     None
