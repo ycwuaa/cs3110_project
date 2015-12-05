@@ -126,7 +126,7 @@ let create_player_colors pids =
   let cols = [| rgb 230 81 0;
                 rgb 50 105 30;
                 rgb 26 35 126;
-                rgb 74 20 140;
+                rgb 90 20 130;
                 rgb 183 28 28;
                 rgb 0 96 100 |] in
   let rec colorer lst n=
@@ -246,9 +246,9 @@ let draw_start () =
 
 (** displays the win/lose screen screen of the game
   * *)
-let draw_end id =
+let draw_end gs id =
   clear_screen ();
-  let name = get_name !cur_gs id in
+  let name = get_name gs id in
   draw_text (name^" is the winner.") 375 120 3 black Center;
   draw_title ();
   draw_message "Thanks for playing.";
@@ -310,5 +310,24 @@ let draw_highlight gs terr =
   plot_image img 0 540 3;
   draw_map_info gs
 
-
+(** takes in a game state  attacker's id and defender's id and displays the
+ * names on the map for player to see *)
+let draw_attack_info gs att def =
+  if(!player_colors = [])
+    then player_colors := create_player_colors (get_player_id_list gs) else ();
+  let (x,y) = (30,160) in
+  let acol = terr_color gs att in
+  let dcol = terr_color gs def in
+  let aname = get_name gs (get_territory_owner gs att) in
+  let dname = get_name gs (get_territory_owner gs def) in
+  set_color black;
+  fill_rect (x-2) (y-50) 88 52;
+  set_color acol;
+  fill_rect x (y-24) 84 24;
+  set_color dcol;
+  fill_rect x (y-48) 84 24;
+  draw_text "ATT:" (x+42) (y-2) 1 white Center;
+  draw_text "DEF:" (x+42) (y-26) 1 white Center;
+  draw_text aname (x+42) (y-14) 1 white Center;
+  draw_text dname (x+42) (y-38) 1 white Center;
 

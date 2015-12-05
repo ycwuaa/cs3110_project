@@ -357,10 +357,15 @@ let rec redistribute_armies gs =
  * the player can defend with and returns the chosen number of dice *)
 let choose_dice gs tfrom tto dice maxn =
   let () = draw_map gs in
+  let () = draw_attack_info gs tfrom tto in
   let () = draw_message (tto^" being attacked @by "^tfrom) in
   let sdice = (string_of_int dice) in
   get_int ("Opp. uses "^sdice^". Choose dice to defend.") 1 maxn
 
+(** blocks until the user presses enter *)
+let rec wait_for_enter () =
+  let a = read_key () in
+    if a <> '\r' then wait_for_enter () else ()
 
 (*Debug code
 let () = draw_start ();

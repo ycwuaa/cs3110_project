@@ -42,3 +42,6 @@ val redistribute_armies : t -> (territory * territory * int) option
  * attacked, and the number of dice enemy is using and maximum number of dice
  * the player can defend with and returns the chosen number of dice *)
 val choose_dice : t -> territory -> territory -> int -> int -> int
+
+(** blocks until the user presses enter *)
+val wait_for_enter: unit -> unit
