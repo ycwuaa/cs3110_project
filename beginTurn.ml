@@ -13,8 +13,14 @@ let award_pieces  (state: t)  (pid: player_id): int =
   (*award troops based on # territories held*)
   let num_held = List.length territories in
   let to_award = num_held / 3 in
-
-  if to_award < 3 then 3 else to_award
+  let continent_l = get_continents state pid in
+  let rec continent_award acc = function
+    | [] -> acc
+    | h::t -> let new_acc = get_continent_pt state h in
+              continent_award (new_acc+acc) t
+  in
+  let cont_aw = continent_award 0 continent_l in
+  if to_award < 3 then (3+cont_aw) else (to_award+cont_aw)
 
   (*TODO: check if any continents are held and award points accordingly*)
 

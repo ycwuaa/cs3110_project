@@ -48,6 +48,9 @@ val get_all_continents : t -> continent list
 (** returns a list of all territories in the game *)
 val get_all_territories : t -> territory list
 
+(** return the award number for the given continent*)
+val get_continent_pt : t -> continent -> int
+
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
 val set_num_armies : t -> territory -> int -> t
