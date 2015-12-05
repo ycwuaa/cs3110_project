@@ -89,7 +89,7 @@ let carray = [|
   [16;17;18;27;33;37];
   [14;16;18;25];
   [22;25;26];
-  [21;23;24;25;33];
+  [21;23;24;25;26;33];
   [18;22;25;33];
   [22;26];
   [11;18;20;21;22;23];
@@ -148,8 +148,6 @@ let add_player (state: t) (pid: player_id) (name: string) (human: bool) : t =
   {state with player_info = new_players}
 
 let new_state () =
-  (* for now, a very small map
-   * TODO: read territory list from file? *)
   { territories = create_territories ();
     active_player = -1;
     continents = create_continents ();
@@ -212,6 +210,18 @@ let get_territory_owner (gs:t) (terr:territory) : player_id =
     | [] -> failwith "Territory not found."
     | (t,n,_)::tl -> if (t = terr) then n else find tl
   in find gs.territories
+
+(** give back the id of the owner of the given continent, or no_one*)
+let get_continent_owner (gs:t) (cont:continent) : player_id =
+  (* returns true if any player in the list owns the continent *)
+  let rec helper player_list =
+    match player_list with
+    | [] -> no_one
+    | h::t ->
+      if List.mem cont (get_territories gs h) then h
+      else helper t
+  in
+  helper (get_player_id_list gs)
 
 
 (** returns a list of all continents in the game *)
@@ -276,14 +286,6 @@ let remove_player (gs:t) (player:player_id) : t =
 
 (** set the active player to the next player*)
 let set_next_player (gs:t) : t =
-  (* let (og,(_,_)) = List.hd (gs.player_info) in
-  let rec find lst =
-    match lst with
-    | [] -> failwith "No players in game."
-    | (i1,(_,_))::(i2,(_,_))::tl -> if(i1 = gs.active_player)
-        then i2 else find tl
-    | (i,(_,_))::tl -> if(i = gs.active_player) then og else find tl
-  in {gs with active_player = (find gs.player_info)} *)
   let current = gs.active_player in
   (*returns the index of active player in player_info*)
   let rec find lst =

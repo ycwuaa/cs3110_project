@@ -60,10 +60,8 @@ let get_my_continents (gs:t) : (continent * float) list =
  * false otherwise *)
 let is_owned_continent (gs:t) (terr:territory) : bool =
   let cont = get_continent_of_terr gs terr in
-  (* check if the no-one condition on get_continents is true
-   * TODO: ask if this'll work with the implementation
-   * check if NOT no one owns the whole continent *)
-  not ( List.mem cont (get_continents gs no_one) )
+  (* check if NOT no one owns the whole continent *)
+  get_continent_owner gs cont <> no_one
 
 (* returns true if this territory cannot attack an enemy territory;
  * false otherwise

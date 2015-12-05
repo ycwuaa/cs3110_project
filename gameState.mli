@@ -39,11 +39,16 @@ val get_armies : t -> territory -> int
 (** give back the id of the owner of the given territory*)
 val get_territory_owner : t -> territory -> player_id
 
-(** get a list of continents controlled by player_id, returns [] if no continents are held *)
+(** get a list of continents controlled by player_id, returns [] if no
+ * continents are held *)
 val get_continents : t -> player_id -> continent list
 
 (** returns a list of all continents in the game *)
 val get_all_continents : t -> continent list
+
+(** give back the id of the owner of the given territory, or no_one if not all
+ * territories in the continent are owned by a single player*)
+val get_continent_owner : t -> continent -> player_id
 
 (** returns a list of all territories in the game *)
 val get_all_territories : t -> territory list

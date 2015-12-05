@@ -91,24 +91,14 @@ let end_turn state =
   else if not (get_is_human gs p') then
     let (num, where) = AI.place_new_armies gs num_new_pieces in
     let curr_armies = get_armies gs where in
-    let _ = Printf.printf "Player %s puts %d pieces on %s \n"
-      (get_name gs p') num (string_of_territory gs where) in
-    let _ = Printf.printf "%d armies left\n" num_new_pieces in
     let gs = set_num_armies gs where (curr_armies + num) in
-    let _ = Printf.printf "%d armies are now on %s\n"
-      (get_armies gs where) (string_of_territory gs where) in
     place_all_turn gs (num_new_pieces - num)
 
   (* if current player is Human *)
   else
     let (num, where) = Input.place_new_armies gs num_new_pieces in
     let curr_armies = get_armies gs where in
-    let _ = Printf.printf "Player %s puts %d pieces on %s \n"
-      (get_name gs p') num (string_of_territory gs where) in
-    let _ = Printf.printf "%d armies left\n" num_new_pieces in
     let gs = set_num_armies gs where (curr_armies + num) in
-    let _ = Printf.printf "%d armies are now on %s\n"
-      (get_armies gs where) (string_of_territory gs where) in
 
     place_all_turn gs (num_new_pieces - num)
 
@@ -138,9 +128,6 @@ let rec do_attack gs =
     match (AI.choose_attack gs) with
     | None -> gs
     | Some (from, toward, num_dice) ->
-      let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
-        (string_of_territory gs from) (string_of_territory gs toward) num_dice in
-
       (* determine humanity of defender *)
       let human = get_is_human gs (get_territory_owner gs toward) in
       let attacker_rolls = List.sort compare (rolls num_dice) in
@@ -168,9 +155,6 @@ let rec do_attack gs =
     match (Input.choose_attack gs) with
     | None -> gs
     | Some (from, toward, num_dice) ->
-      let _ = Printf.printf "Attacking from %s to %s with %d armies\n"
-       (string_of_territory gs from) (string_of_territory gs toward) num_dice in
-
       (* determine humanity of defender *)
       let human = get_is_human gs (get_territory_owner gs toward) in
 
@@ -203,8 +187,6 @@ let rec turn gs =
   (* start turn *)
   (* award pieces *)
   let num_new_pieces = BeginTurn.award_pieces gs current_player in
-  let _ = Printf.printf "Player %s gets %d new pieces\n"
-    (get_name gs current_player) num_new_pieces in
   (* allow current player to place new pieces *)
   let gs = place_all_turn gs num_new_pieces in
 
@@ -214,20 +196,21 @@ let rec turn gs =
   (* end turn *)
   let end_gs = end_turn gs in
 
-  (* wait at the end of a CPU's turn *)
-  let () = if not (get_is_human gs current_player) then
-    Output.draw_map gs;
-    Output.draw_message (Printf.sprintf "End of %s turn" (get_name gs current_player));
-    Input.wait_for_enter ()
-  in
-
   (* exit turn if someone has won, play next turn otherwise *)
   match end_gs with
-  | None -> ()
-  | Some state -> let gs = state in
-    (* increment current player *)
+  | None -> () (* just exit without doing anything *)
+  | Some gs ->
+    (* wait at the end of a CPU's turn *)
+    let () =
+      if not (get_is_human gs current_player) then
+        let () = Output.draw_map gs in
+        let () = Output.draw_message
+          (Printf.sprintf "End of %s turn" (get_name gs current_player)) in
+        Input.wait_for_enter ()
+    in
+
+    (* increment current player and go on to next turn*)
     let gs = set_next_player gs in
-    (* do next player's turn *)
     turn gs
 
 (** the main function; calling this runs the program
@@ -249,7 +232,6 @@ let main () =
     (* manually closing the window *)
     print_endline"Thanks for playing!"
   | e ->
-    print_endline "Oh no! Something failed! Quitting now.";
-    raise e (* TODO: remove the reraise *)
+    print_endline "Oh no! Something failed! Quitting now."
 
 let _ = main ()
