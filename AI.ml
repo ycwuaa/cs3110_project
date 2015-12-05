@@ -8,6 +8,7 @@ type rank = float
 let army_size_multiplier = 0.9 (*prioritize difference in army size*)
 let near_ownership_multiplier = 2.0 (*prioritize my almost-owned continents*)
 let non_boundary_penalty = -5.0 (*avoid non-boundaries of owned region*)
+let internal_conquest_multiplier = 2.5 (*prioritize boundaries of owned region*)
 
 (*
 
@@ -19,6 +20,8 @@ let my_ownership_multiplier = 2.0 (*prioritize defending own continents*)
 
 
 (** HELPER FUNCTIONS **)
+
+let rank_of_bool b = if b then 1.0 else 0.0
 
 (* helper debug function to print out a territory list *)
 let print_list tostring lst =
@@ -68,18 +71,37 @@ let get_my_continents (gs:t) : (continent * float) list =
     )
   ) (get_all_continents gs)
 
-(* returns 1.0 if this territory cannot attack an enemy territory;
- * 0.0 if it can
+(* returns true if this territory cannot attack an enemy territory;
+ * false otherwise
  * precondition: [terr] is the owned by the active player *)
-let is_nonboundary_float (gs:t) (terr:territory) : rank =
+let is_nonboundary (gs:t) (terr:territory) : bool =
   let p' = get_active_player gs in
   let neighbors = get_adjacency gs terr in
   let enemy_neighbors =
     List.filter (fun terr -> (get_territory_owner gs terr) <> p') neighbors in
-  if enemy_neighbors = [] then
-    1.0
-  else
-    0.0
+  enemy_neighbors = []
+
+(* returns true if this territory can attack an enemy territory in a continent I
+ * own most of (more than 50%);
+ * false otherwise
+ * precondition: [terr] is the owned by the active player *)
+let internal_conquest (gs:t) (terr:territory) : bool =
+  let p' = get_active_player gs in
+  let neighbors = get_adjacency gs terr in
+
+  let is_my_continent = List.map
+    (fun (cont,rnk) -> (cont, rnk > 0.5))
+    (get_my_continents gs) in
+
+  let internal_enemy_neighbors =
+    List.filter
+      (fun terr ->
+        (*enemy*)
+        (get_territory_owner gs terr) <> p'
+        (*internal*)
+        && List.assoc (get_continent_of_terr gs terr) is_my_continent )
+      neighbors in
+  internal_enemy_neighbors <> []
 
 (* rate the attacking options from [from] to [target]; return a
  * (rank, from, target) tuple *)
@@ -99,14 +121,15 @@ let rank_attack_option gs (from, target) : rank * territory * territory =
 (* rate the value of a given territory [terr] ; return a (rank, terr) tuple
  * currently just prioritize highest difference in army size *)
 let rank_place_option gs terr : rank * territory =
-  (* prioritize taking defending continents that I already own most of *)
   let near_ownership_bonus =
     List.assoc (get_continent_of_terr gs terr) (get_my_continents gs) in
-  let is_nonboundary = is_nonboundary_float gs terr in
+  let nonboundary_boundary = rank_of_bool (is_nonboundary gs terr) in
+  let internal_conquest_multiplier = rank_of_bool (internal_conquest gs terr) in
 
   (
       near_ownership_bonus *. near_ownership_multiplier
-   +. is_nonboundary *. non_boundary_penalty
+   +. nonboundary_boundary *. non_boundary_penalty
+   +. internal_conquest_multiplier *. internal_conquest_multiplier
    , terr
   )
 
@@ -193,7 +216,7 @@ let choose_attack (gs:t) =
 (* current strategy: move everyone possible *)
 let choose_move_conquerors (gs:t) (from:territory) (target:territory)
   (minMove:int) =
-  min (minMove) (get_armies gs from - 1)
+  get_armies gs from - 1
 
 (* current strategy: do nothing *)
 let redistribute_armies  (gs:t) =

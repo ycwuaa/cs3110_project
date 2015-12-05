@@ -7,6 +7,7 @@ type t = {
            active_player: player_id;
            (* list of (continents, list of territories in the continents) *)
            continents : (continent * territory list) list;
+           continents_point : (continent * int) list;
            continent_owners : (continent * player_id) list;
            (* list of player ids associated with (if they are human, name) *)
            player_info : (player_id * (bool * string)) list;
@@ -92,7 +93,7 @@ let carray = [|
   [21;23;24;25;33];
   [18;22;25;33];
   [22;26];
-  [18;20;21;22;23];
+  [11;18;20;21;22;23];
   [21;22;24];
   [19;28;29;33;37];
   [27;29;34;35;36;37];
@@ -110,6 +111,14 @@ let carray = [|
   [35;41;42];
   [39;40;42];
   [39;40;41] |]
+
+let pt_list = [
+  ("North America", 5);
+  ("South America", 2);
+  ("Europe", 5);
+  ("Africa", 3);
+  ("Asia", 7);
+  ("Australia", 2)]
 
 (*Internal functions*)
 
@@ -145,6 +154,7 @@ let new_state () =
   { territories = create_territories ();
     active_player = -1;
     continents = create_continents ();
+    continents_point = pt_list;
     continent_owners = [];
     player_info = [];
     map = create_connections ()
@@ -233,6 +243,15 @@ let get_all_territories (state: t) : territory list =
     | (t, _, _) :: tl -> t :: get_territory_list tl
   in
   get_territory_list tuples
+
+let get_continent_pt (state: t) cont =
+  let lst = state.continents_point in
+  let rec get_pt = function
+    | [] -> failwith "continent doesn't exist"
+    | (con, pt)::t -> if con=cont then pt
+                      else get_pt t
+  in
+  get_pt lst
 
 (** given the territory and the number of armies intended to change the number
   * on the territory to the new specified value*)
