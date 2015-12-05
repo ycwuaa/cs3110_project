@@ -8,6 +8,9 @@ open GameState
   * accordingly*)
 val award_pieces : t -> player_id -> int
 
+(** returns a new state, checks if [pid] owns any continents in [state] *)
+val continent_ownership : t -> player_id -> t
+
 (** returns a game state with n pieces aligned with player_id placed on given
   * territory, assumes player_id controls territory*)
 val place_piece : t -> int -> player_id -> territory -> t
