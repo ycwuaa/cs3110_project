@@ -61,6 +61,14 @@ TEST_UNIT "attack_outcome" = awins === 1
 
 TEST_UNIT "attack_outcome" = dwins === 2
 
+let attacker_rolls = [4]
+let defender_rolls = [1; 6]
+let (awins, dwins) = attack_outcome attacker_rolls defender_rolls
+
+TEST_UNIT "attack_outcome" = awins === 0
+
+TEST_UNIT "attack_outcome" = dwins === 1
+
 let state = new_state ()
 let terr1 = List.hd (get_territories state no_one)
 let current = get_armies state terr1
