@@ -127,7 +127,8 @@ let rec get_int txt min max =
         let () = draw_input_string txt ns in
         loop (read_key ()) ns
       else
-      let ns = if(String.contains valid c) then s^(Char.escaped c) else s in
+      let ns = if(String.contains valid c && (String.length s) < 8) then
+        s^(Char.escaped c) else s in
       let () = draw_input_string txt ns in
       loop (read_key ()) ns
   in loop ' ' ""
