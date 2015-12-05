@@ -8,7 +8,6 @@ type t = {
            (* list of (continents, list of territories in the continents) *)
            continents : (continent * territory list) list;
            continents_point : (continent * int) list;
-           continent_owners : (continent * player_id) list;
            (* list of player ids associated with (if they are human, name) *)
            player_info : (player_id * (bool * string)) list;
            (* list of territories, associated with a list of its neighbors *)
@@ -155,7 +154,6 @@ let new_state () =
     active_player = -1;
     continents = create_continents ();
     continents_point = pt_list;
-    continent_owners = [];
     player_info = [];
     map = create_connections ()
   }
@@ -215,14 +213,6 @@ let get_territory_owner (gs:t) (terr:territory) : player_id =
     | (t,n,_)::tl -> if (t = terr) then n else find tl
   in find gs.territories
 
-(** get a list of continents controlled by player_id, returns [] if no
-  * continents are held *)
-let get_continents (gs:t) (id:player_id) : continent list =
-  let rec find lst =
-    match lst with
-    | [] -> []
-    | (c,n)::tl -> if(n = id) then c::(find tl) else find tl
-  in find gs.continent_owners
 
 (** returns a list of all continents in the game *)
 let get_all_continents (state: t) : continent list =
@@ -313,13 +303,6 @@ let set_next_player (gs:t) : t =
 let set_active_player (state: t) (pid: player_id): t =
     {state with active_player = pid}
 
-(** sets player_id to be the owner of continent *)
-let set_continent_owner (state: t) (pid: player_id) (cont: continent): t =
-    let cont_list = state.continent_owners in
-    let removed = List.remove_assoc cont cont_list in
-    let new_list = (cont, pid)::removed in
-    {state with continent_owners = new_list}
-
 (** return the name of the given territory *)
 let string_of_territory (gs:t) (terr:territory) : string =
   terr
@@ -349,3 +332,29 @@ let get_continent_of_terr (gs:t) (terr:territory) : continent =
 (** get a list of territories in the given continent *)
 let get_continent_territories (gs:t) (cont:continent) : territory list =
   List.assoc cont gs.continents
+
+
+(** get a list of continents controlled by player_id, returns [] if no
+  * continents are held *)
+let get_continents (gs:t) (id:player_id) : continent list =
+  (** returns true if all elements of [cont_list] are in [terr_list] *)
+   let rec check_cont_ownership terr_list cont_list =
+    match cont_list with
+    | [] -> true
+    | hd :: tl -> (List.mem hd terr_list) && (check_cont_ownership terr_list tl)
+  in
+
+  (** returns the list of all continents in [c_list] owned by [id] *)
+  let rec check_continents t_list c_list =
+    match c_list with
+    | [] -> []
+    | hd :: tl ->
+      let c_t_list = List.assoc hd gs.continents in
+      if check_cont_ownership t_list c_t_list
+        then hd :: (check_continents t_list tl)
+      else check_continents t_list tl
+  in
+  let territories = get_territories gs id in
+  let continents = get_all_continents gs in
+
+  check_continents territories continents

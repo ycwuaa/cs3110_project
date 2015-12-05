@@ -59,9 +59,6 @@ val set_num_armies : t -> territory -> int -> t
   * set the new owner of the territory*)
 val set_territory_owner : t -> territory -> player_id -> t
 
-(** sets player_id to be the owner of continent *)
-val set_continent_owner : t -> player_id -> continent -> t
-
 (** remove a player from the game by giving the playerid*)
 val remove_player : t -> player_id -> t
 
