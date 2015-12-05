@@ -72,7 +72,8 @@ let end_turn state =
               remove_list new_state t
   in
   let after_remove = remove_list after_move losers in
-  let winner = EndTurn.check_win after_move in
+  let winner = EndTurn.check_win after_remove in
+
   match winner with
   | None -> Some after_remove
   | Some x -> Output.draw_end x; None
@@ -236,6 +237,9 @@ let main () =
     print_endline "Thanks for playing!"
 
   with
+  | Graphics.Graphic_failure "fatal I/O error" ->
+    (* manually closing the window *)
+    print_endline"Thanks for playing!"
   | e ->
     print_endline "Oh no! Something failed! Quitting now.";
     raise e (* TODO: remove the reraise *)
