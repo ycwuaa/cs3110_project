@@ -180,7 +180,9 @@ let rec do_attack gs =
       let defender_rolls = List.sort compare (rolls num_dice_def) in
       let (outcome_a, outcome_d) =
         Attack.attack_outcome attacker_rolls defender_rolls in
-
+      let _ =
+        Output.draw_battle gs from toward
+        attacker_rolls defender_rolls (outcome_a, outcome_d) in
       (* remove a piece from [from] for each defender victory *)
       let gs = Attack.remove_pieces gs outcome_d from in
       (* remove a piece from [toward] for each attacker victory *)
