@@ -177,12 +177,6 @@ let place_original_armies (gs:t) (num_new:int) =
 
   let number_list = divide_up num_new num_terr [] in
 
-  (* let _ = Printf.printf "%s" (get_name gs p') in *)
-  let () = print_list (string_of_territory gs) my_terr in
-  let () = Printf.printf "\nNumber of territories: %d\n" num_terr in
-  let () = Printf.printf "\nNumber of armies: %d\n" num_new in
-  let () = print_list (string_of_int) number_list in
-
   List.combine number_list my_terr
 
 (* current strategy: place everything on the first territory found *)
