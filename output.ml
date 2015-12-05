@@ -249,9 +249,9 @@ let draw_start () =
 let draw_end gs id =
   clear_screen ();
   let name = get_name gs id in
-  draw_text (name^" is the winner!") 375 120 3 black Center;
+  draw_text (name^" is the winner.") 375 120 3 black Center;
   draw_title ();
-  draw_message "Thanks for playing!";
+  draw_message "Thanks for playing.";
   draw_input_string "Press ESC to exit." "";
   wait_for_exit ()
 

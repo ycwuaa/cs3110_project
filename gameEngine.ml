@@ -232,6 +232,7 @@ let main () =
     (* manually closing the window *)
     print_endline"Thanks for playing!"
   | e ->
-    print_endline "Oh no! Something failed! Quitting now."
+    print_endline "Oh no! Something failed! Quitting now.";
+    raise e
 
 let _ = main ()
