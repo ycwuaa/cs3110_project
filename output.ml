@@ -126,7 +126,7 @@ let create_player_colors pids =
   let cols = [| rgb 230 81 0;
                 rgb 50 105 30;
                 rgb 26 35 126;
-                rgb 74 20 140;
+                rgb 90 20 130;
                 rgb 183 28 28;
                 rgb 0 96 100 |] in
   let rec colorer lst n=
